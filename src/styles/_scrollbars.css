@@ -1,0 +1,16 @@
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    @apply w-2.5;
+  }
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-90 w-2.5 rounded-[10px];
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-70 w-2.5 rounded-[10px];
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply opacity-90 bg-gray-70;
+  }
+}

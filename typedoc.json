@@ -1,0 +1,6 @@
+{
+    "entryPoints": ["src/components"],
+    "out": "docs",
+    "theme": "default",
+    "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/*.stories.ts", "**/node_modules/**"]
+ }

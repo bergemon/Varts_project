@@ -1,0 +1,37 @@
+{
+  "name": "varts-project",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@types/node": "20.4.6",
+    "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.7",
+    "autoprefixer": "10.4.14",
+    "eslint": "8.46.0",
+    "eslint-config-next": "13.4.12",
+    "next": "13.4.12",
+    "postcss": "8.4.27",
+    "postcss-calc": "^9.0.1",
+    "postcss-import": "^15.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-full-screen": "^1.1.1",
+    "react-parallax-mouse": "^2.1.0",
+    "react-select": "^5.8.0",
+    "tailwind-scrollbar": "^3.0.5",
+    "tailwindcss": "3.3.3",
+    "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.0.1",
+    "postcss-cli": "^10.1.0",
+    "typedoc": "^0.25.3"
+  }
+}
