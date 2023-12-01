@@ -4,7 +4,6 @@ import PrivateRoomIcon from 'public/assets/vector/in_private_icon.svg';
 import SubscribeIcon from 'public/assets/vector/subscription_icon.svg';
 import ReferalIcon from 'public/assets/vector/referral_icon.svg';
 import { BaseButton } from '@/components/UI/baseButton';
-import { RulesModal } from '@/components/modal/rulesModal';
 
 export default function Home() {
     return (

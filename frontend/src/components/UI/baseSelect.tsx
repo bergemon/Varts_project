@@ -62,3 +62,5 @@ export const BaseSelect = React.forwardRef(
         )
     }
 );
+
+BaseSelect.displayName = "BaseSelect";
