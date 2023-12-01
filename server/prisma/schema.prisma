@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  name      String /// Имя.
+  dateBirth String // дата рождения
+  email     String   @unique /// Email, логин пользователь.
+  language  Language /// Язык
+  password  String /// Пользовательский пароль.
+  avatar    String? /// Ссылка на аватар пользователя.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([id, email])
+  @@map("users")
+}
+
+enum Language {
+  russian
+  english
+}
