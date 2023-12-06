@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: '../.env' })
+
 const nextConfig = {
   reactStrictMode: true,
+  env: {
+    BASE_URL_SERVICE: process.env.BASE_URL_SERVICE,
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

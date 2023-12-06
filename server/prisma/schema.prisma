@@ -9,12 +9,14 @@ datasource db {
 
 model User {
   id        String   @id @unique @default(uuid()) // уникальный индентификатор
-  name      String /// Имя.
-  dateBirth String // дата рождения
+  name      String? /// Имя.
+  dateBirth String? // дата рождения
   email     String   @unique /// Email, логин пользователь.
-  language  Language /// Язык
+  language  Language @default(russian) /// Язык
   password  String /// Пользовательский пароль.
   avatar    String? /// Ссылка на аватар пользователя.
+  verify Boolean @default(false) // верификация
+  premium Boolean @default(false) // премиум
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

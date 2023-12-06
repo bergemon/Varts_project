@@ -11,6 +11,9 @@ module.exports = {
         '5xl': '5px',
         '10xl': '10px',
       },
+      borderWidth: {
+        1: "1px"
+      },
       backgroundImage: {
         'primary': "url('/assets/images/bg_primary.png')",
         'gradient-room': 'linear-gradient(180deg, rgba(86, 107, 116, 0) 0%, #566B74 100%)',

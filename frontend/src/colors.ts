@@ -51,8 +51,8 @@ export const getButtonColor = (
 
 // оформление инпутов
 const inputs = {
-    form: 'bg-white rounded-[3px] w-full h-[48px] pl-4 pr-16 outline-none text-dark',
-    search: 'bg-white rounded-[3px] w-full h-[48px] pl-12 pr-32 outline-none text-dark'
+    form: 'bg-white rounded-[3px] h-[48px] pl-4 pr-16 outline-none text-dark',
+    search: 'bg-white rounded-[3px] h-[48px] pl-12 pr-32 outline-none text-dark'
 }
 
 // оформление инпута

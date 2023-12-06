@@ -38,7 +38,7 @@ enum EventTypes {
 
 export const menuDropdownProfile: MenuDropDownProps[] = [
     {
-        href: "/profile",
+        href: "/profile/settings",
         label: "Профиль",
         icon: <ProfileIcon />
     },

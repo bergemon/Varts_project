@@ -11,7 +11,7 @@ type Props = {
 
 export const TopBarTab = ({ tabs, baseLink }: Props) => {
     const router = useRouter();
-    const _selectedTab = (router.query.tab as string) ?? tabs[0].href;
+    const _selectedTab = (router.query.pid as string) ?? tabs[0].href;
     const selectedIndex = tabs.findIndex(tab => tab.href.toLowerCase() === _selectedTab) ?? 0;
 
     if (!router.isReady) {

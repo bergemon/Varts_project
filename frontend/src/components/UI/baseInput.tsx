@@ -12,22 +12,29 @@ type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: any;
   className?: string;
   icon?: 'search' | 'password';
+  flex?: string;
+  width?: 'full' | '350xl';
 }
 
 export const BaseInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ label, color, error, className = '', icon, ...props }, ref) => {
+  ({ label, color, error, flex, width = 'full', className = '', icon, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const widthObj = {
+      "full": "w-full",
+      "350xl": "w-[350px]"
+    }
     const componentClass = [
       'ease-in-out',
       'transition',
       'duration-300',
+      widthObj[width],
       getInputColor(color)
     ]
     const componentClassString = componentClass.join(' ')
     return (
-      <div className={`flex flex-col relative ${className}`}>
+      <div className={`${flex ? flex : 'flex flex-col'} relative ${className}`}>
         {label && <label className="text-sm text-gray placeholder:text-gray font-semibold">{label}</label>}
-        <input type={icon === 'password' ? showPassword ?  'password' : 'text' : undefined} className={componentClassString} ref={ref} {...props} />
+        <input type={icon === 'password' ? showPassword ? 'text' : 'password' : undefined} className={componentClassString} ref={ref} {...props} />
         {error &&
           <p className="absolute text-xs -bottom-8 text-red-500">{error}</p>
         }

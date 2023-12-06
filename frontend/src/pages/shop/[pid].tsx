@@ -28,7 +28,7 @@ export default function Shop() {
                     { id: 1, title: 'Главная', url: '/' },
                     { id: 2, title: 'Магазин', url: '/shop' },
                     { id: 3, title: String(tabs.find((x, index) => selectedIndex === index)?.name), url: '/' },
-                ]} title="Магазин" />
+                ]} title={String(tabs.find((x, index) => selectedIndex === index)?.name)} />
                 <div className="mt-5">
                     <TopBarTab tabs={tabs} baseLink="shop" />
                 </div>

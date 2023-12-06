@@ -32,7 +32,7 @@ export const MenuAsside: MenuAsside[] = [
         id: 3,
         title: "Игра с одного компьютера",
         icon: <OnePkIcon />,
-        link: '/pk'
+        link: '/game-one-pc'
     },
     {
         id: 4,
@@ -44,7 +44,7 @@ export const MenuAsside: MenuAsside[] = [
         id: 5,
         title: "Мой альбом",
         icon: <PhotoIcon />,
-        link: '/album'
+        link: '/my-album'
     },
     {
         id: 6,
