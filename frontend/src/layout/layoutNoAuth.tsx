@@ -8,9 +8,10 @@ import { useModal } from '@/hooks/useModal';
 
 type Props = {
     children: React.ReactNode;
+    logoTitle?: boolean;
 }
 
-export const LayoutNoAuth = ({ children }: Props) => {
+export const LayoutNoAuth = ({ children, logoTitle }: Props) => {
     const { isOpen, onOpenModal, onCloseModal } = useModal()
     return (
         <div className="h-screen w-screen flex flex-col items-center">
@@ -37,7 +38,7 @@ export const LayoutNoAuth = ({ children }: Props) => {
                 <div className="h-full flex flex-col py-[5vh] px-10">
                     <div>
                         <div className="flex justify-center">
-                            <Logo className="w-[10.26vw]" />
+                            {logoTitle ? <div className="text-lg font-medium text-white">Профиль игрока</div> : <Logo className="w-[10.26vw]" />}
                         </div>
                         {children}
                     </div>

@@ -1,9 +1,7 @@
 import { Header } from "@/components/header";
 import { MenuAsside } from '@/menuAsside';
-import Link from 'next/link';
 import PremiumIcon from 'public/assets/vector/premium_icon.svg';
 import { Roboto } from 'next/font/google'
-import { useRouter } from "next/router";
 import { ActiveLink } from "@/components/UI/activeLink";
 import { BaseButton } from "@/components/UI/baseButton";
 import { useModal } from "@/hooks/useModal";

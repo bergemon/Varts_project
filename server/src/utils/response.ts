@@ -32,7 +32,6 @@ const NotFoundResponse = (res: Response, message: string): Response => {
            JSON.stringify({
                status: 'Not Found',
                message,
-               data: {},
            } as ResponseData),
        )
        .end();
@@ -64,7 +63,6 @@ const BadRequestResponse = (res: Response, status: number, message: string): Res
            JSON.stringify({
                status: 'Bad Request',
                message,
-               data: {},
            } as ResponseData),
        )
        .end();

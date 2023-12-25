@@ -30,7 +30,7 @@ export const colorsText: ColorText = {
 }
 
 const colors = {
-    formAuth: 'bg-dark text-white w-full h-[56px] rounded-5xl text-base font-medium ',
+    formAuth: 'bg-dark text-white w-full h-[56px] rounded-5xl text-base font-medium',
     createRoomSm: 'bg-gray-90 text-white h-[30px] w-[115px] rounded-[500px] text-xs',
     createRoomXl: 'bg-gray-70 text-white h-[40px] w-[160px] rounded-5xl text-sm',
     details: 'bg-transparent border-1xl border-gray-70 text-white h-[40px] w-[200px] rounded-5xl text-base font-medium',

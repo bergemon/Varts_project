@@ -10,6 +10,7 @@ module.exports = {
         '3xl': '3px',
         '5xl': '5px',
         '10xl': '10px',
+        '500xl': '500px'
       },
       borderWidth: {
         1: "1px"

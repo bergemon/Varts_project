@@ -3,26 +3,26 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
 type AuthState = {
-  token: string | null
+  access: string | null
   user: null
 }
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    token: typeof window !== 'undefined' ? window.localStorage.getItem('token') : null,
+    access: typeof window !== 'undefined' ? window.localStorage.getItem('access') : null,
     user: null,
   } as AuthState,
   reducers: {
-    setCredentials: (state, { payload: { token } }: PayloadAction<{ token: string }>) => {
-      state.token = token
+    setCredentials: (state, { payload: { access } }: PayloadAction<{ access: string }>) => {
+      state.access = access
     },
     setUser: (state, action) => {
       state.user = action.payload;
     },
     setCredentialsNull: (state: AuthState) => {
-      state.token = null;
-      window.localStorage.setItem('token', '')
+      state.access = null;
+      window.localStorage.setItem('access', '')
     },
   },
 })
@@ -31,4 +31,4 @@ export const { setCredentials, setCredentialsNull, setUser } = authSlice.actions
 
 export default authSlice.reducer
 
-export const selectCurrentUser = (state: RootState) => state.auth.token
+export const selectCurrentUser = (state: RootState) => state.auth.access

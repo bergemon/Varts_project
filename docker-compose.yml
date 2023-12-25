@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: "frontend"
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    restart: always
+    networks:
+      - my_network
+    depends_on:
+      - server
+    command: npm run start
+  server:
+    build:
+      context: ./server
+    container_name: "server"
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+      - /app/dist
+    restart: always
+    networks:
+      - my_network
+    command: npm run develop
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    container_name: "varts_db"
+    image: postgis/postgis:15-master
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d root" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+networks:
+  my_network:
+    driver: bridge

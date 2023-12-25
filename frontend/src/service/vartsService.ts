@@ -3,6 +3,7 @@ import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery 
 import { Mutex } from 'async-mutex'
 import { HYDRATE } from 'next-redux-wrapper'
 import * as dotenv from "dotenv";
+import { IUser, IUserRegister, IUserResponse } from '@/types/user';
 
 dotenv.config({ path: '../.env' })
 
@@ -11,7 +12,7 @@ const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.BASE_URL_SERVICE,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.token
+    const token = (getState() as RootState).auth.access
     if (token) {
       headers.set('authorization', `Bearer ${token}`)
     }
@@ -64,14 +65,14 @@ const customFetchBase: BaseQueryFn<
 export const vartsApi = createApi({
   reducerPath: 'vartsApi', // name api
   baseQuery: customFetchBase,
-  extractRehydrationInfo(action, { reducerPath }) {
-    if (action.type === HYDRATE) {
-      return action.payload[reducerPath]
-    }
-  },
+  // extractRehydrationInfo(action, { reducerPath }) {
+  //   if (action.type === HYDRATE) {
+  //     return action.payload[reducerPath]
+  //   }
+  // },
   endpoints: (build) => ({
     // auth
-    regUser: build.mutation<any, unknown>({
+    regUser: build.mutation<IUserResponse, IUserRegister>({
       query: (data) => ({
         method: 'POST',
         url: '/user/register',
@@ -91,5 +92,6 @@ export const vartsApi = createApi({
 // export hook
 
 export const {
-    useRegUserMutation
+    useRegUserMutation,
+    useLoginUserMutation
 } = vartsApi

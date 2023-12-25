@@ -5,6 +5,8 @@ import SubscribeIcon from 'public/assets/vector/subscription_icon.svg';
 import ReferalIcon from 'public/assets/vector/referral_icon.svg';
 import { BaseButton } from '@/components/UI/baseButton';
 import { RulesModal } from '@/components/modal/rulesModal';
+import { NextPageContext } from 'next';
+import { isAuth } from '@/utils/isAuth';
 
 export default function Home() {
     return (
@@ -54,3 +56,20 @@ export default function Home() {
         </LayoutAuth>
     )
 }
+
+export const getServerSideProps = async (ctx: NextPageContext) => {
+    const isAuthencate = await isAuth(ctx)
+  
+    if (!isAuthencate) {
+      return {
+        redirect: {
+          destination: '/login',
+          permanent: true,
+        },
+      }
+    }
+  
+    return {
+      props: {},
+    }
+  };
