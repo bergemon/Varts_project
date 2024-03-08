@@ -3,6 +3,7 @@ import * as HyperExpress from 'hyper-express';
 import * as dotenv from "dotenv";
 import Router from './app';
 import cors from 'cors';
+import LiveDirectory from 'live-directory';
 
 dotenv.config({ path: '../.env' })
 
@@ -16,6 +17,29 @@ server.use(cors({
     credentials: true
 }));
 
+const LiveAssets = new LiveDirectory('./src/public/files/images', {
+    cache: {
+        max_file_count: 250,
+        max_file_size: 1024 * 1024
+    },
+});
+
+server.get('/static/*', (request, response) => {
+    const path = request.path.replace('/static', '');
+    const file = LiveAssets.get(path);
+    
+    if (file === undefined) return response.status(404).send();
+
+    const fileParts = file.path.split(".");
+    const extension = fileParts[fileParts.length - 1];
+
+    const content = file.content;
+    if (content instanceof Buffer) {
+        return response.type(extension).send(content);
+    } else {
+        return response.type(extension).stream(content);
+    }
+});
 
 server.use(Router);
 server.listen(port)

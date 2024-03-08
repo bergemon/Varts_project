@@ -27,12 +27,9 @@ module.exports = {
         'slide': '0 0 25%'
       },
       colors: {
-        opacity10: {
-          DEFAULT: "#FFFFFF1A",
-        },
-        opacity20: {
-          DEFAULT: "rgba(255, 255, 255, 0.2)",
-        },
+        opacity10: "#FFFFFF1A",
+        opacity20: "rgba(255, 255, 255, 0.2)",
+        error: "#FF0000",
         gray: {
           DEFAULT: "#A1ADB2",
           90: "#566B74",

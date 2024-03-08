@@ -1,14 +1,13 @@
-import { User } from "@prisma/client"
+import { User, Wallet } from "@prisma/client"
 
 // Пользовательская модель
 function userModel(user: User) {
     const userView = {
         id: user.id,
-        name: user.name,
-        dateBirth: user.dateBirth,
+        userName: user.userName,
         email: user.email,
+        birthDay: user.birthDay,
         language: user.language,
-        avatar: user.avatar,
     }
     return userView
 }

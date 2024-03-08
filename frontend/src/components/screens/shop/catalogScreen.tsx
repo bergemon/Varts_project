@@ -1,5 +1,6 @@
-import { BaseInput } from "@/components/UI/baseInput";
+
 import { ChoiseBar } from "@/components/UI/choiseBar";
+import { BaseInput } from "@/components/UI/form/baseInput";
 import { CatalogCards } from "@/data/catalogCards";
 import { Tab } from "@headlessui/react";
 import Image from "next/image";

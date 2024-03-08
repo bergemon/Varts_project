@@ -1,5 +1,5 @@
-import { BaseInput } from "@/components/UI/baseInput";
-import { BaseSelect } from "@/components/UI/baseSelect";
+import { BaseInput } from "@/components/UI/form/baseInput";
+import { BaseSelect } from "@/components/UI/form/baseSelect";
 import { Column, SortOrder, Table } from "@/components/table";
 import { auctionBuyData, auctionSellData } from "@/data/auctionData";
 import { ILot } from "@/types/lot";

@@ -7,18 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// пользователи
 model User {
   id        String   @id @unique @default(uuid()) // уникальный индентификатор
-  name      String? /// Имя.
-  dateBirth String? // дата рождения
+  userName  String? /// Имя игрока
+  password  String
   email     String   @unique /// Email, логин пользователь.
-  language  Language @default(russian) /// Язык
-  password  String /// Пользовательский пароль.
-  avatar    String? /// Ссылка на аватар пользователя.
-  verify Boolean @default(false) // верификация
-  premium Boolean @default(false) // премиум
+  birthDay  String? // дата рождения
+  language  Language @default(russian) // язык
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // кошелек
+  wallet Wallet?
+
+  // друзья
+  friends         Friends[] @relation("friends") // друзья
+  friendsReceiver Friends[] @relation("friendsReceiver") // друзья
+
+  // заявки в друзья
+  requests Requests[]
 
   @@unique([id, email])
   @@map("users")
@@ -29,20 +37,184 @@ enum Language {
   english
 }
 
+// кошелек
+model Wallet {
+  id     String @id @unique @default(uuid())
+  amount Int // число в кошельке
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 
-model DefaultAvatar {
-   id        String   @id @unique @default(uuid()) // уникальный индентификатор
-  name      String? /// Имя.
-  dateBirth String? // дата рождения
-  email     String   @unique /// Email, логин пользователь.
-  language  Language @default(russian) /// Язык
-  password  String /// Пользовательский пароль.
-  avatar    String? /// Ссылка на аватар пользователя.
-  verify Boolean @default(false) // верификация
-  premium Boolean @default(false) // премиум
+  @@map("wallets")
+}
+
+// Друзья
+model Friends {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // id пользователя
+  userId String?
+  user   User?   @relation("friendsReceiver", fields: [userId], references: [id], onDelete: Cascade)
+
+  // id друга
+  friendId String?
+  friend   User?   @relation("friends", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@map("friends")
+}
+
+// Заявка в друзья
+model Requests {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// уведомления
+model Notifications {
+  id        String     @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  read      Boolean    @default(false)
+  event     EventTypes
+}
+
+// enum уведомления
+enum EventTypes {
+  FRIEND_REQUEST
+  INVITED_TO_ROOM
+  USER_ENTERED_ROOM
+  PREMIUM_ACTION_EXPIRED
+  SUBSCRIPTION_ENDING
+  SUPPORT_MESSAGE
+  GIFT_CARD
+  USER_GIFTED_CARD
+  MODERATION_PASSED
+  MOVE_TO_AUCTION
+}
+
+// модель карточек
+model GameCard {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name   String // название карточки
+  author String // кто автор
+  image  String // картинка игровой карточки
+
+  hashTag HashTags[] // хештеги
+  product Products[]
+  set     GameSet[]
+
+  @@map("cards")
+}
+
+// модель игрового поля
+model GameField {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String // название карточки
+  author  String // кто автор
+  image   String // картинка игрового поля
+  hashTag HashTags[] // хештеги
+
+  product Products[]
+  // Добавление связи с GameSet
+  set     GameSet[]
+
+  @@map("fields")
+}
+
+// модель игрового набора
+model GameSet {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name    String // название набора
+  author  String // автор
+  image   String // картинка игрового набора
+  hashTag HashTags[] // хештеги
+
+  product Products[]
+
+  // Добавление связи с GameCard и GameField
+  cards GameCard[]
+
+  field   GameField? @relation(fields: [fieldId], references: [id]) // Уникальная связь с GameField
+  fieldId String?    @unique // Уникальный идентификатор игрового поля в наборе
+
+  @@map("game_sets")
+}
+
+enum ProductType {
+  GameCard
+  GameField
+  GameSet
+}
+
+// модель продукта
+model Products {
+  id        String   @id @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  count_cards  Int
+  cost         Float
+  discountCost Float?
+  discount     Boolean
+  timeDiscount DateTime
+
+  cardId  String?
+  fieldId String?
+  setId   String?
+
+  productType ProductType
+  card        GameCard?   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  field       GameField?  @relation(fields: [fieldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  set         GameSet?    @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("products")
+}
+
+// model manager 
+model Manager {
+  id        String   @id @unique @default(uuid()) // уникальный индентификатор
+  userName  String /// Имя манагера
+  email     String   @unique /// Email, логин пользователь.
+  password  String
+  language  Language @default(russian) // язык
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      RoleType @default(manager)
+
   @@unique([id, email])
-  @@map("default_avatars")
+  @@map("managers")
+}
+
+// enum roles
+enum RoleType {
+  user
+  manager
+  admin
+}
+
+// model hashTag
+model HashTags {
+  id        String      @id @unique @default(uuid()) // уникальный индентификатор
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  title     String      @unique // название хештега
+  cards     GameCard[] // карточки
+  fields    GameField[] // поля
+  set       GameSet[] // игровой набор
+
+  @@map("hash_tags")
 }

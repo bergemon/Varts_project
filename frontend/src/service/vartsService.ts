@@ -1,9 +1,9 @@
 import { RootState } from '@/store/store';
 import { BaseQueryFn, FetchArgs, FetchBaseQueryError, createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { Mutex } from 'async-mutex'
-import { HYDRATE } from 'next-redux-wrapper'
 import * as dotenv from "dotenv";
-import { IUser, IUserRegister, IUserResponse } from '@/types/user';
+import { IUserResponse } from '@/types/user';
+import { ISignInType, ISignUpProfileType, ISignUpType } from '@/utils/yupSchema';
 
 dotenv.config({ path: '../.env' })
 
@@ -64,25 +64,28 @@ const customFetchBase: BaseQueryFn<
 
 export const vartsApi = createApi({
   reducerPath: 'vartsApi', // name api
+  tagTypes: ['Wallet'],
   baseQuery: customFetchBase,
-  // extractRehydrationInfo(action, { reducerPath }) {
-  //   if (action.type === HYDRATE) {
-  //     return action.payload[reducerPath]
-  //   }
-  // },
   endpoints: (build) => ({
     // auth
-    regUser: build.mutation<IUserResponse, IUserRegister>({
+    regUser: build.mutation<{ data: IUserResponse, message: string }, ISignUpType>({
       query: (data) => ({
         method: 'POST',
         url: '/user/register',
         body: data,
       }),
     }),
-    loginUser: build.mutation<any, unknown>({
+    loginUser: build.mutation<any, ISignInType>({
       query: (data) => ({
         method: 'POST',
         url: '/user/login',
+        body: data,
+      }),
+    }),
+    userCreateProfile: build.mutation<any, ISignUpProfileType>({
+      query: (data) => ({
+        method: 'POST',
+        url: '/user/create-profile',
         body: data,
       }),
     }),
@@ -92,6 +95,7 @@ export const vartsApi = createApi({
 // export hook
 
 export const {
-    useRegUserMutation,
-    useLoginUserMutation
-} = vartsApi
+  useRegUserMutation,
+  useLoginUserMutation,
+  useUserCreateProfileMutation
+} = vartsApi;

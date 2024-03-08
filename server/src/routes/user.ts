@@ -8,6 +8,10 @@ router.post('/register', userControllers.userRegister);
 
 router.post('/login', userControllers.userLogin);
 
+router.post('/create-profile', authenticate, userControllers.userCreateProfile);
+
+router.put('/update-profile', authenticate, userControllers.userUpdateProfile);
+
 router.get('/', authenticate, userControllers.userGet);
 
 export default router;

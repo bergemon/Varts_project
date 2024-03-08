@@ -1,5 +1,4 @@
 export type ColorButtonKey = 'formAuth' | 'createRoomSm' | 'createRoomXl' | 'details' | 'purchase' | 'search' | 'check_all';
-export type ColorInputKey = 'form' | 'search';
 
 export type ColorText = {
     gray_50: string;

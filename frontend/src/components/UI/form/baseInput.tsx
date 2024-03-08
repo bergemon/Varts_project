@@ -1,42 +1,41 @@
 import React, { useState } from "react";
 import SearchIcon from "public/assets/vector/search_icon.svg";
-import { getInputColor } from "@/colors";
-import { ColorInputKey } from "@/types/config";
-import { BaseButton } from "./baseButton";
 import OnIcon from "public/assets/vector/eye_on_icon.svg"
 import OffIcon from "public/assets/vector/eye_off_icon.svg"
+import { BaseButton } from "../baseButton";
+import { IColorInputKey, IFormIcon } from "@/types/form";
 
 type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  color: ColorInputKey;
+  color?: IColorInputKey;
   error?: any;
   className?: string;
-  icon?: 'search' | 'password';
-  flex?: string;
-  width?: 'full' | '350xl';
+  icon?: IFormIcon;
 }
 
 export const BaseInput = React.forwardRef<HTMLInputElement, Props>(
-  ({ label, color, error, flex, width = 'full', className = '', icon, ...props }, ref) => {
+  ({ label, color = 'form', error, className = '', icon, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
-    const widthObj = {
-      "full": "w-full",
-      "350xl": "w-[350px]"
+
+    // оформление инпутов
+    const inputs = {
+      form: 'bg-white rounded-[3px] h-[48px] pl-4 pr-16 outline-none text-dark',
+      search: 'bg-white rounded-[3px] h-[48px] pl-12 pr-32 outline-none text-dark'
     }
+
     const componentClass = [
       'ease-in-out',
       'transition',
       'duration-300',
-      widthObj[width],
-      getInputColor(color)
+      inputs[color]
     ]
     const componentClassString = componentClass.join(' ')
     return (
-      <div className={`${flex ? flex : 'flex flex-col'} relative ${className}`}>
+      <div className={`flex flex-col relative${className ? ' ' + className : ''}`}>
         {label && <label className="text-sm text-gray placeholder:text-gray font-semibold">{label}</label>}
-        <input type={icon === 'password' ? showPassword ? 'text' : 'password' : undefined} className={componentClassString} ref={ref} {...props} />
+        <input type={icon === 'password' ? showPassword ? 'text' : 'password' : 'text'} className={componentClassString} ref={ref} {...props} />
         {error &&
-          <p className="absolute text-xs -bottom-8 text-red-500">{error}</p>
+          <p className="text-xs text-red-500">{error}</p>
         }
         {icon === 'search' && (
           <>

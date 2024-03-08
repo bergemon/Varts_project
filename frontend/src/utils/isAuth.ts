@@ -18,30 +18,30 @@ export const isAuth = async ({ req, res }: NextPageContext) => {
     return true
   } catch (error: any) {
     // Проверка, является ли ошибка ошибкой истечения токена
-    if (error.response && error.response.status === 401) {
-      // Получение refresh токена из cookie
-      // Отправка запроса на сервер для получения нового access токена
-      try {
-        const refreshResponse = await axios.get(isServer + '/api/users/refresh', {
-          withCredentials: true,
-          headers: {
-            Cookie: req?.headers.cookie || ''
-          }
-        });
-        if (refreshResponse.data && refreshResponse.data.access) {
-          // Сохранение нового access токена в cookie
-          setCookie('_accessToken', refreshResponse.data.access, { req, res });
-          // Повторная попытка выполнить исходный запрос с новым access токеном
-          await axios.get(isServer + '/v1/user', {
-            headers: { Authorization: `Bearer ${refreshResponse.data.access}` },
-            withCredentials: true
-          });
-          return true;
-        }
-      } catch (refreshError) {
-        console.error('Failed to refresh token:', refreshError);
-      }
-    }
+    // if (error.response && error.response.status === 401) {
+    //   // Получение refresh токена из cookie
+    //   // Отправка запроса на сервер для получения нового access токена
+    //   try {
+    //     const refreshResponse = await axios.get(isServer + '/api/users/refresh', {
+    //       withCredentials: true,
+    //       headers: {
+    //         Cookie: req?.headers.cookie || ''
+    //       }
+    //     });
+    //     if (refreshResponse.data && refreshResponse.data.access) {
+    //       // Сохранение нового access токена в cookie
+    //       setCookie('_accessToken', refreshResponse.data.access, { req, res });
+    //       // Повторная попытка выполнить исходный запрос с новым access токеном
+    //       await axios.get(isServer + '/v1/user', {
+    //         headers: { Authorization: `Bearer ${refreshResponse.data.access}` },
+    //         withCredentials: true
+    //       });
+    //       return true;
+    //     }
+    //   } catch (refreshError) {
+    //     console.error('Failed to refresh token:', refreshError);
+    //   }
+    // }
     deleteCookie('token')
     return false
   }

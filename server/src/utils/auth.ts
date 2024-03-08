@@ -2,45 +2,42 @@ import jwt from 'jsonwebtoken'
 import { UUID } from 'crypto';
 import { User } from '@prisma/client';
 
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'defaultSecret';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'defaultSecret';
 
-function createUserAccessToken(user: User) {
-    if (!process.env.JWT_ACCESS_SECRET) throw new Error('JWT missing')
-    const token = { user: { email: user.email, id: user.id } }
-    const jwtToken = jwt.sign(token, process.env.JWT_ACCESS_SECRET, { expiresIn: '30s' })
-    return jwtToken
+interface Payload {
+    id: string;
+    email: string;
+    jti?: UUID; // Добавлено свойство jti с опциональным типом
+   }
+   
+
+   function createToken(payload: Payload, secret: string, expiresIn: string): string {
+    if (!secret) throw new Error('JWT secret is missing');
+    return jwt.sign(payload, secret, { expiresIn });
 }
 
-function createUserRefreshToken(user: User, jti: UUID) {
-    if (!process.env.JWT_REFRESH_SECRET) throw new Error('JWT missing')
-    const token = { user: { id: user.id, jti } }
-    const jwtToken = jwt.sign(token, process.env.JWT_REFRESH_SECRET, { expiresIn: '30d' })
-    return jwtToken
-}
-
-function generateTokens(user: User, jti: UUID) {
-    const accessToken = createUserAccessToken(user);
-    const refreshToken = createUserRefreshToken(user, jti);
-    return {
-        accessToken,
-        refreshToken
-    }
-}
-
-function validateRefreshToken(token: string) {
+function verifyToken(token: string, secret: string): Payload | null {
+    if (!secret) throw new Error('JWT secret is missing');
     try {
-        if (!process.env.JWT_REFRESH_SECRET) throw new Error('JWT missing')
-        const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-        if (typeof userData === 'object' && userData !== null) {
-            return userData.user;
-        }
+        return jwt.verify(token, secret) as Payload;
     } catch (e) {
         return null;
     }
 }
 
+function generateTokens(entity: Payload, jti: UUID): { accessToken: string; refreshToken: string } {
+    const accessToken = createToken({ id: entity.id, email: entity.email }, JWT_ACCESS_SECRET, '1d');
+    const refreshToken = createToken({ id: entity.id, email: entity.email, jti }, JWT_REFRESH_SECRET, '30d');
+    return { accessToken, refreshToken };
+}
+
+function validateRefreshToken(token: string): Payload | null {
+    const decoded = verifyToken(token, JWT_REFRESH_SECRET);
+    return decoded;
+}
+
 export default {
-    createUserAccessToken,
-    createUserRefreshToken,
     generateTokens,
     validateRefreshToken
 }

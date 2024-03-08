@@ -1,17 +1,18 @@
 import { BaseButton } from '@/components/UI/baseButton';
-import { BaseInput } from '@/components/UI/baseInput';
 import { CheckPass } from '@/components/UI/validatePassword';
 import { LayoutNoAuth } from '@/layout/layoutNoAuth';
 import { useRegUserMutation } from '@/service/vartsService';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials, setUser } from '@/store/slice/authSlice';
-import { IUserRegister } from '@/types/user';
-import { CalcHeight, CalcWidth } from '@/utils/calcSize';
 import { authLogin } from '@/utils/isAuth';
 import { CheckFieldPass } from '@/utils/validateRegisterPassword';
 import { useRouter } from 'next/router';
 import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { FormConstructor } from '@/components/formConstructor';
+import { authSignUpForm } from '@/forms/authForm';
+import { ISignUpType, SignUpSchema } from '@/utils/yupSchema';
 
 export default function Registration() {
 
@@ -19,7 +20,9 @@ export default function Registration() {
   const [registerUser, { data, isError, isLoading, error }] = useRegUserMutation();
 
   // регистрация формы
-  const { register, watch, handleSubmit, formState: { errors } } = useForm<IUserRegister>();
+  const { register, watch, handleSubmit, formState: { errors } } = useForm<ISignUpType>({
+    resolver: yupResolver(SignUpSchema),
+  });
 
   // слежение за паролем
   const password = watch('password');
@@ -28,21 +31,22 @@ export default function Registration() {
 
   const router = useRouter()
 
-  const registrationUser: SubmitHandler<IUserRegister> = (data) => {
+  const registrationUser: SubmitHandler<ISignUpType> = (data) => {
     toast.promise(
       registerUser(data).unwrap(),
       {
         loading: 'Регистрация...',
-        success: (data) => `Регистрация прошла успешно ${data.user.email}`,
+        success: (data) => `Регистрация прошла успешно ${data.data.email}`,
         error: (err) => `Произошла ошибка (${err.data.message})`
       }
     ).then((res) => {
-      authLogin(res.access)
-      const token = res.access
+      authLogin(res.data.access)
+      const token = res.data.access
       localStorage.setItem('access', token)
-      dispatch(setCredentials(res))
+      dispatch(setCredentials(res.data))
       dispatch(setUser(res))
-      router.push('/')
+      console.log(res)
+      router.push('/create-profile')
     })
       .catch((error) => {
         console.error(error);
@@ -52,16 +56,20 @@ export default function Registration() {
   return (
     <LayoutNoAuth>
       <div className="mt-[2.93vh] flex flex-col items-center">
-        <form onSubmit={handleSubmit((data) => registrationUser(data))} style={{ width: CalcWidth(430) }} className={`h-full p-[3.15vh] bg-opacity20 rounded-[1.09vh] gap-[3.26vh] flex flex-col`}>
-          <BaseInput {...register("email")} error={errors.email} placeholder="E-email" color="form" />
-          <BaseInput {...register("password")} error={errors.password} type="password" placeholder="Пароль" color="form" />
-          <BaseInput {...register("password_repeat")} error={errors.password_repeat} type="password" placeholder="Пароль" color="form" />
+        <FormConstructor
+          containerClassName="h-full p-[3.15vh] bg-opacity20 rounded-[1.09vh] "
+          inputClassName="gap-[3.26vh] flex flex-col"
+          formClassName="gap-[3.26vh] flex flex-col"
+          onSubmit={handleSubmit(data => registrationUser(data))}
+          errors={errors}
+          fieldList={authSignUpForm}
+          register={register}
+        >
           {password && <div className="grid grid-cols-2 gap-[0.625vw] text-white">
             {CheckFieldPass.map(item => (
               <CheckPass label={item.label} key={item.id} checked={item.regex.test(password)} />
             ))}
           </div>}
-          {/* {isError && error && <p>{error.data.message.toString()}</p>} */}
           <div>
             <BaseButton type="submit" color="formAuth" disabled={isLoading}>Зарегистрироваться</BaseButton>
           </div>
@@ -69,7 +77,7 @@ export default function Registration() {
             Нажимая на кнопку «Отправить» Вы даете свое согласие с пользовательским соглашением
           </div>
           <div className="text-base font-medium text-white text-center">У меня уже есть аккаунт</div>
-        </form>
+        </FormConstructor>
       </div>
     </LayoutNoAuth>
   )

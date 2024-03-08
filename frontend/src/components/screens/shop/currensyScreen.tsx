@@ -1,9 +1,11 @@
 import { colorsBg } from "@/colors";
 import { BaseButton } from "@/components/UI/baseButton";
 import { CurrensyShop } from "@/data/currensyShop";
+import { usePaymentsWalletMutation } from "@/service/paymentService";
 import QuestionIcon from 'public/assets/vector/question_icon.svg';
 
 export const CurrensyScreen = () => {
+    const [payment] = usePaymentsWalletMutation();
     return (
         <div>
             <div className="grid grid-cols-4 mt-8 gap-2.5">
@@ -14,7 +16,7 @@ export const CurrensyScreen = () => {
                             <div className="text-3xl font-bold">{item.numberCoins}</div>
                         </div>
                         <div className="w-full px-4">
-                            <BaseButton color="purchase">
+                            <BaseButton onClick={() => payment(item.query)} color="purchase">
                                 {`Купить за ${item.money} ₽`}
                             </BaseButton>
                         </div>
