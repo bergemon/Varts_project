@@ -10,7 +10,7 @@ const OkResponse = (res: Response, data: any): Response => {
    return res
        .status(200)
        .header('Connection', 'keep-alive')
-       .header('Keep-Alive', 'timeout=5')
+       .header('Keep-Alive', 'timeout=20')
        .header('Content-Type', 'application/json')
        .send(
            JSON.stringify({
@@ -19,7 +19,7 @@ const OkResponse = (res: Response, data: any): Response => {
                data,
            } as ResponseData),
        )
-       .end();
+       .end()
 };
 
 const NotFoundResponse = (res: Response, message: string): Response => {
@@ -28,13 +28,14 @@ const NotFoundResponse = (res: Response, message: string): Response => {
        .header('Connection', 'keep-alive')
        .header('Keep-Alive', 'timeout=5')
        .header('Content-Type', 'application/json; charset=utf-8')
+       .header('Test', 'test')
        .send(
            JSON.stringify({
                status: 'Not Found',
                message,
            } as ResponseData),
        )
-       .end();
+       .end()
 };
 
 const CreatedResponse = (res: Response, data: any): Response => {
@@ -50,7 +51,7 @@ const CreatedResponse = (res: Response, data: any): Response => {
                data,
            } as ResponseData),
        )
-       .end();
+       .end()
 };
 
 const BadRequestResponse = (res: Response, status: number, message: string): Response => {
@@ -65,7 +66,7 @@ const BadRequestResponse = (res: Response, status: number, message: string): Res
                message,
            } as ResponseData),
        )
-       .end();
+       .end()
 };
 
-export { OkResponse, NotFoundResponse, CreatedResponse, BadRequestResponse };
+export { OkResponse, NotFoundResponse, CreatedResponse, BadRequestResponse }

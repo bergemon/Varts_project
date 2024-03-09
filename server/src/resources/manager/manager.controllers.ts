@@ -1,12 +1,11 @@
-import { Request, Response } from 'hyper-express';
-import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response';
-import userServices from '@/resources/user/user.services';
-import { compareWithHash, hashPassword } from '@/utils/hashPassword';
-import auth from '@/utils/auth';
-import { randomUUID } from 'crypto';
-import managerService from './manager.service';
-import { managerModel } from './manager.model';
-
+import { Request, Response } from 'hyper-express'
+import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response'
+import userServices from '@/resources/user/user.services'
+import { compareWithHash, hashPassword } from '@/utils/hashPassword'
+import auth from '@/utils/auth'
+import { randomUUID } from 'crypto'
+import managerService from './manager.service'
+import { managerModel } from './manager.model'
 
 // register
 async function managerRegister(req: Request, res: Response) {

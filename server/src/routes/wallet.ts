@@ -1,11 +1,11 @@
-import { authenticate } from '@/middleware/authenticator';
-import walletControllers from '@/resources/wallet/wallet.controllers';
-import { Router } from 'hyper-express';
+import { authenticate } from '@/middleware/authenticator'
+import walletControllers from '@/resources/wallet/wallet.controllers'
+import { Router } from 'hyper-express'
 
-const router = new Router();
+const router = new Router()
 
-router.get('/', authenticate, walletControllers.getWalletMoney);
+router.get('/', authenticate, walletControllers.getWalletMoney)
 
-router.post('/:amountParam', authenticate, walletControllers.walletPayment);
+router.post('/:amountParam', authenticate, walletControllers.walletPayment)
 
-export default router;
+export default router

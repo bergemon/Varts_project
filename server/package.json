@@ -9,7 +9,7 @@
   "scripts": {
     "develop": "dotenv -e ../.env -- npx ts-node-dev --rs --clear --exit-child src/server.ts",
     "build": "dotenv -e ../.env -- npx tsc",
-    "start": "node dist/server.js",
+    "start": "dotenv -e src/.env npx ts-node-dev src/server.ts",
     "migrate:create": "dotenv -e ../.env -- npx prisma migrate dev --name init"
   },
   "dependencies": {
