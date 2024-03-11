@@ -1,44 +1,59 @@
-import { Request, Response } from 'hyper-express';
-import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response';
-import userServices from '@/resources/user/user.services';
-import walletServices from './wallet.services';
-import { walletModel } from './wallet.model';
+import { Request, Response } from 'hyper-express'
+import { response, res_type } from '@/utils/response'
+import userServices from '@/resources/user/user.services'
+import walletServices from './wallet.services'
+import { walletModel } from './wallet.model'
 
 
 type PaymentAmounts = {
-    pay80: number;
-    pay250: number;
-    pay500: number;
-    pay1000: number;
-};
+    pay80: number
+    pay250: number
+    pay500: number
+    pay1000: number
+}
 
 // get wallet
 async function getWalletMoney(req: Request, res: Response) {
-    const id = req.locals.auth?.user?.id;
-    try {
-        const user = await userServices.userGetPrisma(id);
+    const id = req.locals.auth?.user?.id
 
-        if (!user) return BadRequestResponse(res, 404, 'User not auth');
+    try
+    {
+        const user = await userServices.userGetPrisma(id)
+
+        if (!user)
+        {
+            return response(res, res_type.not_found, { error: 'User not auth'})
+        }
 
         const wallet = await walletServices.walletGetPrisma(user.id)
 
-        if(!wallet) return NotFoundResponse(res, 'wallet not found');
+        if(!wallet)
+        {
+            return response(res, res_type.not_found, { error: 'Wallet not found'})
+        }
 
-        return OkResponse(res, wallet.amount)
-    } catch (error: any) {
-        return res.status(500).json({ error: error });
+        return response(res, res_type.ok, wallet.amount.toString())
+    }
+    catch (error: any)
+    {
+        return res.status(500).json({ error: error })
     }
 }
 
 // payment
-async function walletPayment(req: Request, res: Response) {
+async function walletPayment(req: Request, res: Response)
+{
     const id = req.locals.auth?.user?.id;
-    const { amountParam } = req.params;
-    try {
+    const { amountParam } = req.params
 
-        const user = await userServices.userGetPrisma(id);
+    try
+    {
+        const user = await userServices.userGetPrisma(id)
 
-        if (!user) return BadRequestResponse(res, 404, 'User not auth');
+        if (!user)
+        {
+            return response(res, res_type.not_found, { error: 'User not auth'})
+        }
 
         const objPay: PaymentAmounts = {
             pay80: 80,
@@ -48,8 +63,9 @@ async function walletPayment(req: Request, res: Response) {
         }
 
         // Проверяем, существует ли параметр в объекте
-        if (!objPay.hasOwnProperty(amountParam)) {
-            return BadRequestResponse(res, 500, 'Invalid payment amount parameter');
+        if (!objPay.hasOwnProperty(amountParam))
+        {
+            return response(res, res_type.server_error, { error: 'Invalid payment amount parameter'})
         }
 
         // Получаем сумму пополнения из объекта
@@ -57,13 +73,16 @@ async function walletPayment(req: Request, res: Response) {
 
         const createPayment = await walletServices.walletPaymentPrisma(user.id, paymentAmount)
 
-        return CreatedResponse(res, walletModel(createPayment));
-    } catch (error: any) {
-        return res.status(500).json({ error: error });
+        return response(res, res_type.ok, walletModel(createPayment))
+    }
+    catch (error: any)
+    {
+        return response(res, res_type.server_error, { error: error })
     }
 }
 
-export default {
+export default
+{
     getWalletMoney,
     walletPayment
 }

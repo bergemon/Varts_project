@@ -1,6 +1,5 @@
 import { Wallet } from "@prisma/client"
 
-
 // Пользовательская модель
 function walletModel(wallet: Wallet) {
     const walletView = {

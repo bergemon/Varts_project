@@ -1,5 +1,7 @@
 import { Router } from 'hyper-express'
-const LiveDirectory = require('live-directory')
+import { Request, Response } from 'hyper-express'
+import { response, res_type } from '@/utils/response'
+import LiveDirectory from 'live-directory'
 
 const router = new Router()
 
@@ -12,21 +14,22 @@ const LocalFiles = new LiveDirectory('./public/files/images', {
     },
 })
 
-router.get('/static/*', (request, response) => {
-        const path = request.path.replace('/static', '')
+router.get('/static/*', (req: Request, res: Response): Response =>
+{
+        const path = req.path.replace('/static', '')
         const file = LocalFiles.get(path)
         
-        if (file === undefined) return response.status(404).send()
+        if (file === undefined)
+        {
+            return response(res, res_type.not_found, {error: "File not found"})
+        }
     
         const fileParts = file.path.split(".")
         const extension = fileParts[fileParts.length - 1]
     
         const content = file.content
-        if (content instanceof Buffer) {
-            return response.type(extension).send(content)
-        } else {
-            return response.type(extension).stream(content)
-        }
+        
+        return res.type(extension).send(content)
     }
 )
 

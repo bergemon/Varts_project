@@ -4,8 +4,8 @@ import { GameField, HashTags } from "@prisma/client"
 function fieldsModel(field: GameField & { hashTag: HashTags[] }) {
     const fieldsView = {
         id: field.id,
-        createdAt: field.createdAt,
-        updatedAt: field.updatedAt,
+        created_at: field.created_at,
+        updated_at: field.updated_at,
         name: field.name,
         author: field.author,
         hashTag: field.hashTag,

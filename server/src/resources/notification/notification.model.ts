@@ -4,8 +4,8 @@ import { Notifications } from "@prisma/client"
 function notificationsModel(notifications: Notifications) {
     const notificationsView = {
         id: notifications.id,
-        createdAt: notifications.createdAt,
-        updatedAt: notifications.updatedAt,
+        created_at: notifications.created_at,
+        updated_at: notifications.updated_at,
         read: notifications.read,
         event: notifications.event
     }

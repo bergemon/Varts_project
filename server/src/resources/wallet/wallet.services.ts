@@ -1,42 +1,39 @@
-import prisma from "@/utils/prisma";
+import prisma from "@/utils/prisma"
 
 // получение кошелька
-async function walletGetPrisma(
-    userId: string
-) {
+async function walletGetPrisma(user_id: string)
+{
     const wallet = await prisma.wallet.findFirst({
-        where: { userId: userId }
+        where: { user_id: user_id }
     })
-    return wallet;
+    return wallet
 }
 
 // создание нового кошелька
-async function walletCreatePrisma(
-    userId: string
-) {
+async function walletCreatePrisma(user_id: string)
+{
     const wallet = await prisma.wallet.create({
-        data: { userId: userId, amount: 0 },
+        data: { user_id: user_id, amount: 0 },
     })
-    return wallet;
+    return wallet
 }
 
 // пополнение кошелька
-async function walletPaymentPrisma(
-    userId: string,
-    amount: number,
-) {
+async function walletPaymentPrisma(user_id: string, amount: number)
+{
     const wallet = await prisma.wallet.update({
-        where: { userId: userId },
+        where: { user_id: user_id },
         data: {
             amount: {
                 increment: amount
             }
         }
     })
-    return wallet;
+    return wallet
 }
 
-export default {
+export default
+{
     walletGetPrisma,
     walletCreatePrisma,
     walletPaymentPrisma

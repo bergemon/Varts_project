@@ -1,10 +1,10 @@
-import 'module-alias/register'
+require('module-alias/register')
 import * as HyperExpress from 'hyper-express'
 import * as dotenv from 'dotenv'
 import routes from './root'
 import cors from 'cors'
 
-dotenv.config({ path: '../.env' })
+dotenv.config({ path: '.env' })
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 5000
 

@@ -4,8 +4,8 @@ import { HashTags } from "@prisma/client"
 function hashTagsModel(hashTags: HashTags) {
     const hashTagsView = {
         id: hashTags.id,
-        createdAt: hashTags.createdAt,
-        updatedAt: hashTags.updatedAt,
+        created_at: hashTags.created_at,
+        updated_at: hashTags.updated_at,
         title: hashTags.title
     }
     return hashTagsView

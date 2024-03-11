@@ -1,12 +1,40 @@
-import { Response } from 'hyper-express';
+import { Response } from 'hyper-express'
 
 interface ResponseData {
- status: string;
- message: string;
- data: any;
+    status: string
+    message: string
+    data: any
 }
 
-const OkResponse = (res: Response, data: any): Response => {
+// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+export enum res_type
+{
+    ok = 200,
+    bad_request = 400,
+    unauthorized = 401,
+    payment_required = 402,
+    forbidden = 403,
+    not_found = 404,
+    method_not_allowed = 405,
+    server_error = 500,
+    not_implemented = 501
+}
+
+const response = <T extends object>(res: Response, status: res_type | number, data: T | string): Response =>
+{
+    return res
+        .status(status)
+        .header('Connection', 'keep-alive')
+        .header('Keep-Alive', 'timeout=20')
+        .header('Content-Type', 'application/json')
+        .send(
+            JSON.stringify({data} as ResponseData),
+        )
+        .end()
+}
+
+const OkResponse = (res: Response, data: any): Response =>
+{
    return res
        .status(200)
        .header('Connection', 'keep-alive')
@@ -22,7 +50,8 @@ const OkResponse = (res: Response, data: any): Response => {
        .end()
 };
 
-const NotFoundResponse = (res: Response, message: string): Response => {
+const NotFoundResponse = (res: Response, message: any): Response =>
+{
    return res
        .status(404)
        .header('Connection', 'keep-alive')
@@ -38,7 +67,8 @@ const NotFoundResponse = (res: Response, message: string): Response => {
        .end()
 };
 
-const CreatedResponse = (res: Response, data: any): Response => {
+const CreatedResponse = (res: Response, data: any): Response =>
+{
    return res
        .status(201)
        .header('Connection', 'keep-alive')
@@ -54,7 +84,8 @@ const CreatedResponse = (res: Response, data: any): Response => {
        .end()
 };
 
-const BadRequestResponse = (res: Response, status: number, message: string): Response => {
+const BadRequestResponse = (res: Response, status: number, message: any): Response =>
+{
    return res
        .status(status)
        .header('Connection', 'keep-alive')
@@ -67,6 +98,13 @@ const BadRequestResponse = (res: Response, status: number, message: string): Res
            } as ResponseData),
        )
        .end()
-};
+}
 
-export { OkResponse, NotFoundResponse, CreatedResponse, BadRequestResponse }
+export
+{
+    response,
+    OkResponse,
+    NotFoundResponse,
+    CreatedResponse,
+    BadRequestResponse
+}

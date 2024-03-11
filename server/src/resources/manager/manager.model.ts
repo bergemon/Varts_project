@@ -4,11 +4,11 @@ import { Manager } from "@prisma/client"
 function managerModel(manager: Manager) {
     const managerView = {
         id: manager.id,
-        userName: manager.userName,
+        userName: manager.username,
         email: manager.email,
         language: manager.language,
-        createdAt: manager.createdAt,
-        updatedAt: manager.updatedAt,
+        created_at: manager.created_at,
+        updated_at: manager.updated_at,
         role: manager.role
     }
     return managerView

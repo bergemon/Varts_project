@@ -2,12 +2,12 @@ import prisma from "@/utils/prisma";
 
 // создание пользователя в бд
 async function managerCreatePrisma(
-    userName: string,
+    username: string,
     email: string,
     password: string,
 ) {
     const manager = await prisma.manager.create({
-        data: { userName, email, password },
+        data: { username, email, password },
     })
     return manager;
 }
@@ -33,13 +33,13 @@ async function managerEmailPrisma(email: string) {
 // обновление данных пользователя
 async function managerUpdatePrisma(
     id: string,
-    userName: string,
+    username: string,
     password: string,
   ) {
     const manager = await prisma.manager.update({
       where: { id },
       data: {
-        userName,
+        username,
         password
       }
     })

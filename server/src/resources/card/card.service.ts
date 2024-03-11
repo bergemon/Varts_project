@@ -7,7 +7,7 @@ async function cardGetAllPrisma(page: number, take: number) {
         skip: skip,
         take: take,
         orderBy: {
-            createdAt: 'desc',
+            created_at: 'desc',
         },
         include: {
             hashTag: true

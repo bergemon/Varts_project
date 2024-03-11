@@ -4,8 +4,8 @@ import { Friends } from "@prisma/client"
 function friendsModel(friends: Friends) {
     const friendsView = {
         id: friends.id,
-        createdAt: friends.createdAt,
-        updatedAt: friends.updatedAt
+        created_at: friends.created_at,
+        updated_at: friends.updated_at
     }
     return friendsView
 }

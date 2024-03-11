@@ -4,8 +4,8 @@ import { Requests } from "@prisma/client"
 function requestsModel(requests: Requests) {
     const requestsView = {
         id: requests.id,
-        createdAt: requests.createdAt,
-        updatedAt: requests.updatedAt
+        created_at: requests.created_at,
+        updated_at: requests.updated_at
     }
     return requestsView
 }
