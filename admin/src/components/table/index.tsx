@@ -16,6 +16,7 @@ import {
     Input,
     Tooltip,
 } from "@material-tailwind/react";
+import { UseFormReset, FieldValues } from "react-hook-form";
 
 export type Column<T> = {
     id: keyof T & string;
@@ -33,11 +34,14 @@ type TableProps<T> = {
     onPageChange: (page: number) => void;
     title: string;
     postTitle: string;
-    onDeleteOpen?: (row: T) => void;
-    onEditOpen?: (row: T) => void;
+    tooltips?: {
+        edit: string;
+        delete: string;
+    };
+    reset?: any;
 }
 
-export const Table = <T,>({ columns, data, currentPage, totalPages, onPageChange, title, postTitle, onDeleteOpen, onEditOpen }: TableProps<T>) => {
+export const Table = <T,>({ columns, data, currentPage, totalPages, onPageChange, title, postTitle, tooltips, reset }: TableProps<T>) => {
     const handlePreviousPage = () => {
         if (currentPage > 0) {
             onPageChange(currentPage - 1);
@@ -50,7 +54,22 @@ export const Table = <T,>({ columns, data, currentPage, totalPages, onPageChange
         }
     };
 
-    const { openModal } = useModalContext();
+    const { openModal } = useModalContext<T>();
+
+    const openEdit = (row: T) => {
+        openModal("edit", row);
+        reset!(row)
+    }
+
+    const openDelete = (row: T) => {
+        openModal("delete", row);
+        reset!(row)
+    }
+
+    const openCreate = () => {
+        openModal("create");
+        reset!(undefined)
+    }
 
     return (
         <Card className="h-full w-full">
@@ -72,7 +91,7 @@ export const Table = <T,>({ columns, data, currentPage, totalPages, onPageChange
                                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
                             />
                         </div>
-                        <Button onClick={() => openModal('create')} size="sm">
+                        <Button onClick={openCreate} size="sm">
                             Создать
                         </Button>
                     </div>
@@ -108,20 +127,19 @@ export const Table = <T,>({ columns, data, currentPage, totalPages, onPageChange
                                         <td className="p-4 border-b border-blue-gray-50" key={column.id}>{column.isDate && row[column.id] ? dateFormat(row[column.id] as string) : row[column.id] as React.ReactNode}</td>
                                     )
                                 ))}
-                                {onEditOpen && onDeleteOpen &&
-                                    <td className="p-4 border-b border-blue-gray-50">
-                                        <Tooltip content="Edit User">
-                                            <IconButton onClick={() => openModal('edit', row)} variant="text">
-                                                <PencilIcon className="h-4 w-4" />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip content="Edit User">
-                                            <IconButton onClick={() => openModal('delete', row)} variant="text">
-                                                <TrashIcon className="h-4 w-4" />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </td>
-                                }
+                                <td className="p-4 border-b border-blue-gray-50">
+                                    <Tooltip content={tooltips?.edit}>
+                                        <IconButton onClick={() => openEdit(row)} variant="text">
+                                            <PencilIcon className="h-4 w-4" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip content={tooltips?.delete}>
+                                        <IconButton onClick={() => openDelete(row)} variant="text">
+                                            <TrashIcon className="h-4 w-4" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </td>
+
                             </tr>
                         ))}
                     </tbody>

@@ -29,8 +29,8 @@ export type ISignInType = Yup.InferType<typeof SignInSchema>;
 export const gameCardSchema = Yup.object({
     name: Yup.string().required('Обязательное поле'),
     author: Yup.string().required('Обязательное поле'),
-    hashtag: Yup.array().of(Yup.string().required('Обязательное поле')),
-    image: Yup.array(),
+    // hashtag: Yup.array().of(Yup.string().required('Обязательное поле')),
+    image: Yup.mixed().required('Картинка обязательна'),
 });
 
 export type IGameCardType = Yup.InferType<typeof gameCardSchema>;
@@ -39,8 +39,8 @@ export type IGameCardType = Yup.InferType<typeof gameCardSchema>;
 export const gameFieldSchema = Yup.object({
     name: Yup.string().required('Обязательное поле'),
     author: Yup.string().required('Обязательное поле'),
-    hashtag: Yup.array().of(Yup.string().required('Обязательное поле')),
-    image: Yup.array(),
+    // hashtag: Yup.array().of(Yup.string().required('Обязательное поле')),
+    image: Yup.mixed().required('Картинка обязательна'),
 });
 
 export type IGameFieldType = Yup.InferType<typeof gameFieldSchema>;

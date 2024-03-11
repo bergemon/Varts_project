@@ -30,7 +30,7 @@ export const ModalComponent = ({ open, onClose, onConfirm, title, children }: Pr
                 >
                     <span>Отменить</span>
                 </Button>
-                <Button variant="gradient" color="green" onClick={onConfirm}>
+                <Button type="submit" variant="gradient" color="green" onClick={onConfirm}>
                     <span>Подтвердить</span>
                 </Button>
             </DialogFooter>

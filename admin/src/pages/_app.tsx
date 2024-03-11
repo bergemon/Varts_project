@@ -1,3 +1,4 @@
+import { ModalProvider } from "@/context/modalContext";
 import { makeStore } from "@/store/store";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@material-tailwind/react";
@@ -19,13 +20,15 @@ export default function App({ Component, ...rest }: AppPropsWithLayout) {
 
   const store = makeStore();
 
-  const getLayout = Component.getLayout || ((page) => page)
+  const getLayout = Component.getLayout || ((page) => page);
   return (
     <ThemeProvider>
       <Provider store={store}>
-        {getLayout(
-          <Component {...rest} />
-        )}
+        <ModalProvider>
+          {getLayout(
+            <Component {...rest} />
+          )}
+        </ModalProvider>
       </Provider>
     </ThemeProvider>
   );

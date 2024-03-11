@@ -15,5 +15,9 @@ export interface IFieldResponse extends IResponse {
 }
 
 export interface IFieldsResponse extends IResponse {
-    data: IGameField[];
+    data: {
+        currentPage: number;
+        totalPages: number;
+        fields: IGameField[];
+    };
 }
