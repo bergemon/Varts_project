@@ -1,4 +1,4 @@
-import { IGameCard, IGameCardResponse, IGameCardsResponse } from "@/types/gameCard";
+import { IGameCardResponse, IGameCardsResponse } from "@/types/gameCard";
 import { vartsApi } from "./vartsService";
 import { IResponseQuery } from "@/types/response";
 
@@ -29,20 +29,19 @@ const gameCardService = vartsApi.injectEndpoints({
             invalidatesTags: [{ type: 'Cards', id: 'LIST' }],
         }),
         // update card
-        updateCard: build.mutation<IGameCardResponse, any>({
+        updateCard: build.mutation<IGameCardResponse, { id: string, data: FormData}>({
             query: ({ id, data }) => ({
-                method: 'POST',
+                method: 'PUT',
                 url: `/card/${id}`,
                 body: data,
             }),
             invalidatesTags: [{ type: 'Cards', id: 'LIST' }],
         }),
         // delete card
-        deleteCard: build.mutation<IGameCardResponse, any>({
-            query: ({ id, data }) => ({
-                method: 'POST',
+        deleteCard: build.mutation<IGameCardResponse, string>({
+            query: (id) => ({
+                method: 'DELETE',
                 url: `/card/${id}`,
-                body: data,
             }),
             invalidatesTags: [{ type: 'Cards', id: 'LIST' }],
         }),

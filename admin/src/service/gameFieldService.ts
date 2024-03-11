@@ -8,40 +8,40 @@ const fieldService = vartsApi.injectEndpoints({
         // Получение всех полей
         getAllFields: build.query<IFieldsResponse, IResponseQuery>({
             query: ({ page, take }) => ({
-                url: `/fields`,
+                url: `/field`,
                 params: { page, take }
             }),
             providesTags: (result) =>
                 result
                     ? [
-                        ...result.data.map(({ id }) => ({ type: 'Fields' as const, id })),
+                        ...result.data.fields.map(({ id }) => ({ type: 'Fields' as const, id })),
                         { type: 'Fields', id: 'LIST' },
                     ]
                     : [{ type: 'Fields', id: 'LIST' }],
         }),
         // Создание нового поля
-        createNewField: build.mutation<IFieldResponse, Partial<IGameField>>({
+        createNewField: build.mutation<IFieldResponse, FormData>({
             query: (newField) => ({
                 method: 'POST',
-                url: '/fields',
+                url: '/field',
                 body: newField,
             }),
             invalidatesTags: [{ type: 'Fields', id: 'LIST' }],
         }),
         // Обновление поля
-        updateField: build.mutation<IFieldResponse, { id: string; data: Partial<IGameField> }>({
+        updateField: build.mutation<IFieldResponse, { id: string; data: FormData }>({
             query: ({ id, data }) => ({
                 method: 'PUT',
-                url: `/fields/${id}`,
+                url: `/field/${id}`,
                 body: data,
             }),
             invalidatesTags: [{ type: 'Fields', id: 'LIST' }],
         }),
         // Удаление поля
-        deleteField: build.mutation<IFieldResponse, { id: string }>({
-            query: ({ id }) => ({
+        deleteField: build.mutation<IFieldResponse, string>({
+            query: (id) => ({
                 method: 'DELETE',
-                url: `/fields/${id}`,
+                url: `/field/${id}`,
             }),
             invalidatesTags: [{ type: 'Fields', id: 'LIST' }],
         }),

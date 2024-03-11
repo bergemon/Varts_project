@@ -15,11 +15,17 @@ export const gameCardForm: IForm<IGameCardType>[] = [
         placeholder: "Автор",
         label: "Автор"
     },
+    // {
+    //     fieldName: "hashtag",
+    //     type: "input",
+    //     placeholder: "Название",
+    //     label: "Название"
+    // },
     {
-        fieldName: "hashtag",
-        type: "input",
-        placeholder: "Название",
-        label: "Название"
+        fieldName: "image",
+        type: "image",
+        placeholder: "Выберите изображение для загрузки",
+        label: "Выберите изображение для загрузки"
     }
 ];
 
@@ -38,11 +44,17 @@ export const gameFieldForm: IForm<IGameFieldType>[] = [
         placeholder: "Автор",
         label: "Автор"
     },
+    // {
+    //     fieldName: "hashtag",
+    //     type: "input",
+    //     placeholder: "Название",
+    //     label: "Название"
+    // },
     {
-        fieldName: "hashtag",
-        type: "input",
-        placeholder: "Название",
-        label: "Название"
+        fieldName: "image",
+        type: "image",
+        placeholder: "Выберите изображение для загрузки",
+        label: "Выберите изображение для загрузки"
     }
 ];
 
