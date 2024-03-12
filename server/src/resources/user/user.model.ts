@@ -4,8 +4,8 @@ import { User, Wallet } from "@prisma/client"
 function userModel(user: User) {
     const userView = {
         id: user.id,
-        userName: user.username,
         email: user.email,
+        userName: user.username,
         birthDay: user.birthday,
         language: user.language,
     }

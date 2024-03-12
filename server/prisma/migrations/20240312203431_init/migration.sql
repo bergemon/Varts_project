@@ -20,12 +20,22 @@ CREATE TABLE "users" (
     "password" VARCHAR(200) NOT NULL,
     "language" "Language" NOT NULL DEFAULT 'russian',
     "account_type" "AccountType" NOT NULL DEFAULT 'base',
+    "verified" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "username" VARCHAR(150),
     "birthday" VARCHAR(100),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "verification_codes" (
+    "hash" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "verification_codes_pkey" PRIMARY KEY ("hash")
 );
 
 -- CreateTable
@@ -181,6 +191,12 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "users_id_email_key" ON "users"("id", "email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "verification_codes_hash_key" ON "verification_codes"("hash");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "verification_codes_user_id_key" ON "verification_codes"("user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "wallets_id_key" ON "wallets"("id");
 
 -- CreateIndex
@@ -248,6 +264,9 @@ CREATE UNIQUE INDEX "_GameSetToHashTags_AB_unique" ON "_GameSetToHashTags"("A", 
 
 -- CreateIndex
 CREATE INDEX "_GameSetToHashTags_B_index" ON "_GameSetToHashTags"("B");
+
+-- AddForeignKey
+ALTER TABLE "verification_codes" ADD CONSTRAINT "verification_codes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "wallets" ADD CONSTRAINT "wallets_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

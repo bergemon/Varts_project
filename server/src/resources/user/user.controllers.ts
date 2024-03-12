@@ -1,60 +1,11 @@
 import { Request, Response } from 'hyper-express'
 import { response, res_type } from '@/utils/response'
 import userServices from '@/resources/user/user.services'
-import { compareWithHash, hashPassword } from '@/utils/hashPassword'
+import { compareWithHash } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 import { randomUUID } from 'crypto'
 import { userModel } from './user.model'
 import walletServices from '../wallet/wallet.services'
-import { ok } from 'assert'
-
-// register
-async function userRegister(req: Request, res: Response)
-{
-    const { email, password, password_repeat } = await req.json()
-
-    try
-    {
-        if (!email && !password && !password_repeat)
-        {
-            return response(res, res_type.server_error, { error: 'Please write email, password & password_repeat' })
-        }
-
-        if (password !== password_repeat)
-        {
-            return response(res, res_type.forbidden, { error: 'Repeated password does not match' })
-        }
-
-        const emailUniq = await userServices.userEmailPrisma(email)
-        if (emailUniq)
-        {
-            return response(res, res_type.bad_request, { error: 'User already exists' })
-        }
-
-        const hashed = hashPassword(password)
-
-        const user = await userServices.userCreatePrisma(email, hashed)
-        if (!user)
-        {
-            return response(res, res_type.server_error, { error: 'User create error' })
-        }
-
-        const jti = randomUUID()
-
-        const { accessToken, refreshToken } = auth.generateTokens(user, jti)
-        if (!accessToken || !refreshToken)
-        {
-            return response(res, res_type.server_error, { error: 'Failed to generate tokens' })
-        }
-
-        res.cookie('_refreshToken', refreshToken)
-        return response(res, res_type.ok, { email: user.email, access: accessToken, message: 'Please create profile.' })
-    }
-    catch (error: any)
-    {
-        return response(res, res_type.server_error, { error: error })
-    }
-}
 
 // create profile
 async function userCreateProfile(req: Request, res: Response)
@@ -64,7 +15,7 @@ async function userCreateProfile(req: Request, res: Response)
 
     try
     {
-        const user = await userServices.userGetPrisma(id)
+        const user = await userServices.get_user(id)
 
         if (!user)
         {
@@ -164,7 +115,7 @@ async function userGet(req: Request, res: Response)
     try
     {
         // Get current user
-        const currentUser = await userServices.userGetPrisma(id)
+        const currentUser = await userServices.get_user(id)
 
         if (!currentUser)
         {
@@ -188,7 +139,7 @@ async function userUpdateProfile(req: Request, res: Response)
     const { userName, birthDay, language } = await req.json()
     try
     {
-        const currentUser = await userServices.userGetPrisma(id);
+        const currentUser = await userServices.get_user(id)
 
         if(!currentUser)
         {
@@ -214,7 +165,6 @@ async function userUpdateProfile(req: Request, res: Response)
 
 export default
 {
-    userRegister,
     userLogin,
     userGet,
     userCreateProfile,

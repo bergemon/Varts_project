@@ -8,36 +8,22 @@ if (!process.env.JWT_ACCESS_SECRET) {
     throw new Error("JWT_SECRET missing in environment.")
 }
 
-function getTokenInHeader(req: Request) {
-    const authorization = req.headers.authorization
+function get_tokens_from_request_header(req: Request): any {
+    const session_token = req.cookies["_stk"]
+    const refresh_token = req.cookies["_rtk"]
 
-    if (!authorization)
-    {
-        return
-    }
-
-    if (authorization.split("=").length != 2)
-    {
-        return
-    }
-    
-    const [tag, token] = authorization.split("=")
-    if (tag === "Token" || tag === "Bearer")
-    {
-        return token
-    }
-
-    return
+    return [session_token, refresh_token]
 }
 
 export const authenticate = (req: Request, res: Response, next: Function) => {
-    const token = getTokenInHeader(req)
-    if (!token)
+    const [session_token, refresh_token] = get_tokens_from_request_header(req)
+
+    if (!session_token)
     {
         return res.status(401).json({ error: 'No token provided.' })
     }
   
-    jwt.verify(token, process.env.JWT_ACCESS_SECRET!, (err, decoded) => {
+    jwt.verify(session_token, process.env.JWT_ACCESS_SECRET!, (err: any, decoded: any) => {
         if (err)
         {
             return res.status(500).json({ error: 'Failed to authenticate token.' })
@@ -48,14 +34,14 @@ export const authenticate = (req: Request, res: Response, next: Function) => {
 }
 
 export const optionalAuthenticate = (req: Request, res: Response, next: Function) => {
-    const token = getTokenInHeader(req)
+    const [session_token, refresh_token] = get_tokens_from_request_header(req)
 
-    if (!token) {
+    if (!session_token) {
         next()
         return
     }
 
-    jwt.verify(token, process.env.JWT_ACCESS_SECRET!, (err, decoded) => {
+    jwt.verify(session_token, process.env.JWT_ACCESS_SECRET!, (err: any, decoded: any) => {
         if (err) {
             next()
             return

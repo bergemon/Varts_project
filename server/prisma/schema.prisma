@@ -24,6 +24,7 @@ model User {
     password        String       @db.VarChar(200)
     language        Language     @default(russian)
     account_type    AccountType  @default(base)
+    verified        Boolean      @default(false)
 
     // date
     created_at      DateTime     @default(now())
@@ -37,6 +38,9 @@ model User {
     // wallet
     wallet Wallet?
 
+    // Verification code
+    code VerificationCodes[]
+
     // friends
     friends         Friendship[] @relation("friends")
     friendsReceiver Friendship[] @relation("friendsReceiver")
@@ -48,8 +52,21 @@ model User {
     @@map("users")
 }
 
+// Verification codes
+model VerificationCodes {
+    hash        String    @id @unique
+
+    // date
+    created_at      DateTime     @default(now())
+
+    user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id     String    @unique
+
+    @@map("verification_codes")
+}
+
 // Wallet
-model Wallet {
+model Wallet{
     id     String     @id @unique @default(uuid())
     amount Int        
     user   User       @relation(fields: [user_id], references: [id])

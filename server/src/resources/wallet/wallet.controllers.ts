@@ -18,7 +18,7 @@ async function getWalletMoney(req: Request, res: Response) {
 
     try
     {
-        const user = await userServices.userGetPrisma(id)
+        const user = await userServices.get_user(id)
 
         if (!user)
         {
@@ -48,7 +48,7 @@ async function walletPayment(req: Request, res: Response)
 
     try
     {
-        const user = await userServices.userGetPrisma(id)
+        const user = await userServices.get_user(id)
 
         if (!user)
         {

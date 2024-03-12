@@ -1,7 +1,7 @@
 import { Request, Response } from 'hyper-express'
 import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response'
 import userServices from '@/resources/user/user.services'
-import { compareWithHash, hashPassword } from '@/utils/hashPassword'
+import { compareWithHash, hashPassword } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 import { randomUUID } from 'crypto'
 import managerService from './manager.service'
