@@ -5,7 +5,7 @@ import { compareWithHash } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 
 // login
-async function userLogin(req: Request, res: Response) 
+async function authenticate_user(req: Request, res: Response) 
 {
     const { email, password } = await req.json()
     
@@ -34,11 +34,6 @@ async function userLogin(req: Request, res: Response)
             return response(res, res_type.server_error, { error: 'Failed to generate tokens'})
         }
 
-        if (!user.username)
-        {
-            return response(res, res_type.ok, { error: 'Failed to generate tokens' })
-        }
-
         // Set tokens into cookies
         res.cookie('_stk', session_token)
         res.cookie('_rtk', refresh_token)
@@ -52,5 +47,5 @@ async function userLogin(req: Request, res: Response)
 
 export default
 {
-    userLogin
+    authenticate_user
 }

@@ -5,7 +5,7 @@ import send_email from '@/resources/user/utils/send_email'
 import { hashPassword, hash_it } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 
-async function userRegister(req: Request, res: Response)
+async function sign_up_user(req: Request, res: Response)
 {
     const { email, password, password_repeat } = await req.json()
 
@@ -142,7 +142,7 @@ async function send_verification_again(req: Request, res: Response)
 
 export default
 {
-    userRegister,
+    sign_up_user,
     verificate_user,
     send_verification_again
 }

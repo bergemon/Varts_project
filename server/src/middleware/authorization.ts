@@ -19,7 +19,7 @@ function get_tokens_from_request_header(req: Request): any
     return [session_token, refresh_token]
 }
 
-export const authenticate = (req: Request, res: Response, next: Function) =>
+export const authorization = (req: Request, res: Response, next: Function) =>
 {
     const [stk, rtk] = get_tokens_from_request_header(req)
 
@@ -30,7 +30,7 @@ export const authenticate = (req: Request, res: Response, next: Function) =>
             .json({ error: "You didn't provide refresh token" })
     }
 
-    const decoded_stk = auth.validate_stk(stk)
+    const decoded_stk = stk !== undefined ? auth.validate_stk(stk) : null
 
     if (decoded_stk === null)
     {

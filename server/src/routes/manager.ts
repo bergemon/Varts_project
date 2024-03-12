@@ -1,4 +1,4 @@
-import { authenticate } from '@/middleware/authenticator'
+import { authenticate } from '@/middleware/authorization'
 import managerControllers from '@/resources/manager/manager.controllers'
 import { Router } from 'hyper-express'
 

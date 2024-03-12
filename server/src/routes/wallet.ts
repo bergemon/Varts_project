@@ -1,4 +1,4 @@
-import { authenticate } from '@/middleware/authenticator'
+import { authenticate } from '@/middleware/authorization'
 import walletControllers from '@/resources/wallet/wallet.controllers'
 import { Router } from 'hyper-express'
 
