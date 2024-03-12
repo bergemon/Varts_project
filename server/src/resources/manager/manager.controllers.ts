@@ -1,14 +1,13 @@
 import { Request, Response } from 'hyper-express'
-import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response'
-import userServices from '@/resources/user/user.services'
+import { BadRequestResponse, CreatedResponse, OkResponse } from '@/utils/response'
 import { compareWithHash, hashPassword } from '@/utils/hash_some'
 import auth from '@/utils/auth'
-import { randomUUID } from 'crypto'
 import managerService from './manager.service'
 import { managerModel } from './manager.model'
 
 // register
-async function managerRegister(req: Request, res: Response) {
+async function managerRegister(req: Request, res: Response)
+{
     const { userName, email, password, password_repeat } = await req.json()
     try {
 
@@ -29,56 +28,61 @@ async function managerRegister(req: Request, res: Response) {
         const manager = await managerService.managerCreatePrisma(userName, email, hashed)
 
         if (!manager) {
-            return BadRequestResponse(res, 500, 'Manager create error');
+            return BadRequestResponse(res, 500, 'Manager create error')
         }
 
-        const jti = randomUUID();
+        const { session_token, refresh_token } = auth.generateTokens(manager.id, manager.email)
 
-        const { accessToken, refreshToken } = auth.generateTokens(manager, jti)
-
-        if (!accessToken || !refreshToken) {
+        if (!session_token || !refresh_token) {
             return BadRequestResponse(res, 500, 'Failed to generate tokens');
         }
 
-        const managerView = managerModel(manager);
+        const managerView = managerModel(manager)
 
-        res.cookie('_refreshToken', refreshToken)
-        return CreatedResponse(res, { manager: managerView, accessToken: accessToken });
-    } catch (error: any) {
-        return res.status(500).json({ error: error });
+        // Set tokens into cookies
+        res.cookie('_stk', session_token)
+        res.cookie('_rtk', refresh_token)
+
+        return CreatedResponse(res, { manager: managerView, accessToken: session_token })
+    }
+    catch (error: any)
+    {
+        return res.status(500).json({ error: error })
     }
 }
 
 // login
-async function managerLogin(req: Request, res: Response) {
+async function managerLogin(req: Request, res: Response)
+{
     const { email, password } = await req.json()
-    try {
 
-        if(!email || !password) return BadRequestResponse(res, 500, 'Please write');
+    try
+    {
+        if(!email || !password) return BadRequestResponse(res, 500, 'Please write')
 
         const manager = await managerService.managerEmailPrisma(email)
 
-        if (!manager) return BadRequestResponse(res, 404, 'Manager not found');
+        if (!manager) return BadRequestResponse(res, 404, 'Manager not found')
 
+        if (!compareWithHash(password, manager.password)) return BadRequestResponse(res, 403, 'Failed')
 
-        if (!compareWithHash(password, manager.password)) return BadRequestResponse(res, 403, 'Failed');
+        const { session_token, refresh_token } = auth.generateTokens(manager.id, manager.email)
 
-        const jti = randomUUID();
-
-        const { accessToken, refreshToken } = auth.generateTokens(manager, jti)
-
-        if (!accessToken || !refreshToken) {
+        if (!session_token || !refresh_token) {
             BadRequestResponse(res, 500, 'Failed to generate tokens');
         }
 
+        const managerView = managerModel(manager)
 
-        const managerView = managerModel(manager);
+        // Set tokens into cookies
+        res.cookie('_stk', session_token)
+        res.cookie('_rtk', refresh_token)
 
-        res.cookie('_refreshToken', refreshToken);
-
-        return OkResponse(res, { accessToken: accessToken, manager: managerView });
-    } catch (error: any) {
-        return res.status(500).json({ error: error });
+        return OkResponse(res, { accessToken: session_token, manager: managerView });
+    }
+    catch (error: any)
+    {
+        return res.status(500).json({ error: error })
     }
 }
 

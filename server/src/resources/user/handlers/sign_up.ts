@@ -3,7 +3,6 @@ import { response, res_type } from '@/utils/response'
 import userServices from '@/resources/user/user.services'
 import send_email from '@/resources/user/utils/send_email'
 import { hashPassword, hash_it } from '@/utils/hash_some'
-import { randomUUID } from 'crypto'
 import auth from '@/utils/auth'
 
 async function userRegister(req: Request, res: Response)
@@ -45,21 +44,23 @@ async function userRegister(req: Request, res: Response)
             `<h1>Go to ${process.env.BASE_URL_SERVICE}/user/verificate/${verification.hash} to verify your account<h1>`
         )
 
-        const jti = randomUUID()
-        const { accessToken, refreshToken } = auth.generateTokens(user, jti)
-        if (!accessToken || !refreshToken)
+        const { session_token, refresh_token } = auth.generateTokens(user.id, user.email)
+
+        if (!session_token || !refresh_token)
         {
             return response(res, res_type.server_error, { error: 'Failed to generate tokens' })
         }
 
         // Set tokens into cookies
-        res.cookie('_stk', accessToken)
-        res.cookie('_rtk', refreshToken)
+        res.cookie('_stk', session_token)
+        res.cookie('_rtk', refresh_token)
         return response(res, res_type.ok, { email: user.email, message: 'Please create profile.' })
     }
     catch (error: any)
     {
-        return response(res, res_type.server_error, { error: error })
+        return res
+            .status(res_type.server_error)
+            .json({ error: error})
     }
 }
 
@@ -133,7 +134,9 @@ async function send_verification_again(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return response(res, res_type.server_error, { error: error })
+        return res
+            .status(res_type.server_error)
+            .json({ error: error})
     }
 }
 

@@ -61,7 +61,10 @@ async function get_user(id: string)
 // получение пользователя из бд по email
 async function userEmailPrisma(email: string)
 {
-    if (!email) { return null }
+    if (!email)
+    {
+        return null
+    }
 
     const user = await prisma.user.findUnique({
         where: { email }

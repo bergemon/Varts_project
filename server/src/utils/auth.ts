@@ -1,6 +1,4 @@
 import jwt from 'jsonwebtoken'
-import { UUID } from 'crypto'
-// import { User } from '@prisma/client'
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'defaultSecret'
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'defaultSecret'
@@ -9,19 +7,24 @@ interface Payload
 {
     id: string
     email: string
-    jti?: UUID // Добавлено свойство jti с опциональным типом
-}
-   
-
-function createToken(payload: Payload, secret: string, expiresIn: string): string
-{
-    if (!secret) { throw new Error('JWT secret is missing') }
-    return jwt.sign(payload, secret, { expiresIn })
+    expires: number
 }
 
-function verifyToken(token: string, secret: string): Payload | null
+function createToken(payload: Payload, secret: string): string
 {
-    if (!secret) { throw new Error('JWT secret is missing') }
+    if (!secret)
+    {
+        throw new Error('JWT secret is missing')
+    }
+    return jwt.sign(payload, secret)
+}
+
+function verify_token(token: string, secret: string): Payload | null
+{
+    if (!secret)
+    {
+        throw new Error('JWT secret is missing')
+    }
 
     try
     {
@@ -34,21 +37,57 @@ function verifyToken(token: string, secret: string): Payload | null
     }
 }
 
-function generateTokens(entity: Payload, jti: UUID): { accessToken: string; refreshToken: string }
+function validate_stk(token: string): Payload | null
 {
-    const accessToken = createToken({ id: entity.id, email: entity.email }, JWT_ACCESS_SECRET, '1d')
-    const refreshToken = createToken({ id: entity.id, email: entity.email, jti }, JWT_REFRESH_SECRET, '30d')
-    return { accessToken, refreshToken }
+    const decoded = verify_token(token, JWT_ACCESS_SECRET)
+
+    if (decoded !== null)
+    {
+        return decoded.expires > new Date().getTime()
+            ? decoded
+            : null
+    }
+
+    return null
 }
 
-function validateRefreshToken(token: string): Payload | null
+function validate_rtk(token: string): Payload | null 
 {
-    const decoded = verifyToken(token, JWT_REFRESH_SECRET)
-    return decoded
+    const decoded = verify_token(token, JWT_REFRESH_SECRET)
+
+    if (decoded !== null)
+    {
+        return decoded.expires > new Date().getTime()
+            ? decoded
+            : null
+    }
+
+    return null
+}
+
+function generateTokens(user_id: string, user_email: string)
+    : { session_token: string; refresh_token: string }
+{
+    const current_time = new Date().getTime()
+    // 10 minutes
+    const stk_expiration = current_time + 6e5
+    // 90 days
+    const rtk_expiration = current_time + 7776e6
+
+    const session_token = createToken(
+        { id: user_id, email: user_email, expires: stk_expiration },
+        JWT_ACCESS_SECRET
+    )
+    const refresh_token = createToken(
+        { id: user_id, email: user_email, expires: rtk_expiration },
+        JWT_REFRESH_SECRET
+    )
+    return { session_token, refresh_token }
 }
 
 export default
 {
-    generateTokens,
-    validateRefreshToken
+    validate_stk,
+    validate_rtk,
+    generateTokens
 }
