@@ -1,7 +1,7 @@
-import { User, Wallet } from "@prisma/client"
+import { User } from "@prisma/client"
 
 // Пользовательская модель
-function userModel(user: User) {
+function get(user: User) {
     const userView = {
         id: user.id,
         email: user.email,
@@ -12,6 +12,6 @@ function userModel(user: User) {
     return userView
 }
 
-export {
-    userModel
+export default {
+    get
 }

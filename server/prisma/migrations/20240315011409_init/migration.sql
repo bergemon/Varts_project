@@ -8,10 +8,10 @@ CREATE TYPE "AccountType" AS ENUM ('base', 'premium');
 CREATE TYPE "EventTypes" AS ENUM ('FRIEND_REQUEST', 'INVITED_TO_ROOM', 'USER_ENTERED_ROOM', 'PREMIUM_ACTION_EXPIRED', 'SUBSCRIPTION_ENDING', 'SUPPORT_MESSAGE', 'GIFT_CARD', 'USER_GIFTED_CARD', 'MODERATION_PASSED', 'MOVE_TO_AUCTION');
 
 -- CreateEnum
-CREATE TYPE "ProductType" AS ENUM ('GameCard', 'GameField', 'GameSet');
+CREATE TYPE "RoleType" AS ENUM ('moderator', 'admin');
 
 -- CreateEnum
-CREATE TYPE "RoleType" AS ENUM ('user', 'manager', 'admin');
+CREATE TYPE "LotType" AS ENUM ('GameCard', 'GameField', 'GameSet');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -116,24 +116,6 @@ CREATE TABLE "game_sets" (
 );
 
 -- CreateTable
-CREATE TABLE "products" (
-    "id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "count_cards" INTEGER NOT NULL,
-    "cost" DOUBLE PRECISION NOT NULL,
-    "discountCost" DOUBLE PRECISION,
-    "discount" BOOLEAN NOT NULL,
-    "timeDiscount" TIMESTAMP(3) NOT NULL,
-    "cardId" VARCHAR(200),
-    "fieldId" VARCHAR(200),
-    "setId" VARCHAR(200),
-    "productType" "ProductType" NOT NULL,
-
-    CONSTRAINT "products_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "managers" (
     "id" TEXT NOT NULL,
     "username" VARCHAR(200) NOT NULL,
@@ -142,7 +124,7 @@ CREATE TABLE "managers" (
     "language" "Language" NOT NULL DEFAULT 'russian',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "role" "RoleType" NOT NULL DEFAULT 'manager',
+    "role" "RoleType" NOT NULL DEFAULT 'moderator',
 
     CONSTRAINT "managers_pkey" PRIMARY KEY ("id")
 );
@@ -155,6 +137,41 @@ CREATE TABLE "hash_tags" (
     "title" TEXT NOT NULL,
 
     CONSTRAINT "hash_tags_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "store" (
+    "lot_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "amount" INTEGER NOT NULL,
+    "cost" DOUBLE PRECISION NOT NULL,
+    "discount" BOOLEAN NOT NULL,
+    "disc_cost" DOUBLE PRECISION,
+    "disc_expires" TIMESTAMP(3) NOT NULL,
+    "manager_id" VARCHAR(200) NOT NULL,
+    "card_id" VARCHAR(200),
+    "field_id" VARCHAR(200),
+    "gameSet_id" VARCHAR(200),
+    "lot_type" "LotType" NOT NULL,
+
+    CONSTRAINT "store_pkey" PRIMARY KEY ("lot_id")
+);
+
+-- CreateTable
+CREATE TABLE "market" (
+    "lot_id" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "amount" INTEGER NOT NULL,
+    "cost" DOUBLE PRECISION NOT NULL,
+    "user_id" VARCHAR(200) NOT NULL,
+    "card_id" VARCHAR(200),
+    "field_id" VARCHAR(200),
+    "gameSet_id" VARCHAR(200),
+    "lot_type" "LotType" NOT NULL,
+
+    CONSTRAINT "market_pkey" PRIMARY KEY ("lot_id")
 );
 
 -- CreateTable
@@ -224,9 +241,6 @@ CREATE UNIQUE INDEX "game_sets_id_key" ON "game_sets"("id");
 CREATE UNIQUE INDEX "game_sets_fieldId_key" ON "game_sets"("fieldId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "products_id_key" ON "products"("id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "managers_id_key" ON "managers"("id");
 
 -- CreateIndex
@@ -240,6 +254,12 @@ CREATE UNIQUE INDEX "hash_tags_id_key" ON "hash_tags"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "hash_tags_title_key" ON "hash_tags"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "store_lot_id_key" ON "store"("lot_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "market_lot_id_key" ON "market"("lot_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_GameCardToHashTags_AB_unique" ON "_GameCardToHashTags"("A", "B");
@@ -284,13 +304,28 @@ ALTER TABLE "requests" ADD CONSTRAINT "requests_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "game_sets" ADD CONSTRAINT "game_sets_fieldId_fkey" FOREIGN KEY ("fieldId") REFERENCES "fields"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES "cards"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "store" ADD CONSTRAINT "store_manager_id_fkey" FOREIGN KEY ("manager_id") REFERENCES "managers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_fieldId_fkey" FOREIGN KEY ("fieldId") REFERENCES "fields"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "store" ADD CONSTRAINT "store_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "cards"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_setId_fkey" FOREIGN KEY ("setId") REFERENCES "game_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "store" ADD CONSTRAINT "store_field_id_fkey" FOREIGN KEY ("field_id") REFERENCES "fields"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "store" ADD CONSTRAINT "store_gameSet_id_fkey" FOREIGN KEY ("gameSet_id") REFERENCES "game_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "market" ADD CONSTRAINT "market_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "market" ADD CONSTRAINT "market_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "cards"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "market" ADD CONSTRAINT "market_field_id_fkey" FOREIGN KEY ("field_id") REFERENCES "fields"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "market" ADD CONSTRAINT "market_gameSet_id_fkey" FOREIGN KEY ("gameSet_id") REFERENCES "game_sets"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_GameCardToHashTags" ADD CONSTRAINT "_GameCardToHashTags_A_fkey" FOREIGN KEY ("A") REFERENCES "cards"("id") ON DELETE CASCADE ON UPDATE CASCADE;

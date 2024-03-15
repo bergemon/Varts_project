@@ -36,10 +36,13 @@ model User {
 
     // relations
     // wallet
-    wallet Wallet?
+    wallet          Wallet?
 
     // Verification code
-    code VerificationCodes[]
+    code            VerificationCodes[]
+
+    // Reference to market
+    lot             Lot[]
 
     // friends
     friends         Friendship[] @relation("friends")
@@ -57,7 +60,7 @@ model VerificationCodes {
     hash        String    @id @unique
 
     // date
-    created_at      DateTime     @default(now())
+    created_at  DateTime  @default(now())
 
     user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
     user_id     String    @unique
@@ -67,10 +70,10 @@ model VerificationCodes {
 
 // Wallet
 model Wallet{
-    id     String     @id @unique @default(uuid())
-    amount Int        
-    user   User       @relation(fields: [user_id], references: [id])
-    user_id String    @unique
+    id          String      @id @unique @default(uuid())
+    amount      Int        
+    user        User        @relation(fields: [user_id], references: [id])
+    user_id     String      @unique
 
     @@map("wallets")
 }
@@ -115,118 +118,100 @@ enum EventTypes {
 }
 
 model Notifications {
-    id        String        @id @unique @default(uuid())
-    created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
-    read      Boolean       @default(false)
-    event     EventTypes
+    id              String        @id @unique @default(uuid())
+    created_at      DateTime      @default(now())
+    updated_at      DateTime      @updatedAt
+    read            Boolean       @default(false)
+    event           EventTypes
 
     @@map("notifications")
 }
 
 // Game card
 model GameCard {
-    id        String   @id @unique @default(uuid()) // уникальный индентификатор
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id          String   @id @unique @default(uuid()) // уникальный индентификатор
+    created_at  DateTime @default(now())
+    updated_at  DateTime @updatedAt
 
-    name   String       @db.VarChar(200) // название карточки
-    author String       @db.VarChar(200) // кто автор
-    image  String       @db.VarChar(200) // картинка игровой карточки
+    name        String       @db.VarChar(200) // название карточки
+    author      String       @db.VarChar(200) // кто автор
+    image       String       @db.VarChar(200) // картинка игровой карточки
 
-    hashTag HashTags[] // хештеги
-    product Product[]
-    set     GameSet[]
+    hashTag     HashTags[]
+    set         GameSet[]
+
+    // Reference to store
+    product     Product[]
+    // Reference to market
+    lot         Lot[]
 
     @@map("cards")
 }
 
 // Game field
 model GameField {
-    id        String   @id @unique @default(uuid()) // уникальный индентификатор
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id          String      @id @unique @default(uuid()) // уникальный индентификатор
+    created_at  DateTime    @default(now())
+    updated_at  DateTime    @updatedAt
 
-    name    String      @db.VarChar(200) // название карточки
-    author  String      @db.VarChar(200) // кто автор
-    image   String      @db.VarChar(200) // картинка игрового поля
-    hashTag HashTags[] // хештеги
+    name        String      @db.VarChar(200) // название карточки
+    author      String      @db.VarChar(200) // кто автор
+    image       String      @db.VarChar(200) // картинка игрового поля
 
-    product Product[]
-    // Добавление связи с GameSet
-    set     GameSet[]
+    hashTag     HashTags[]
+    set         GameSet[]
+
+    // Reference to store
+    product     Product[]
+    // Reference to market
+    lot         Lot[]
 
     @@map("fields")
 }
 
 // Game set
 model GameSet {
-    id        String        @id @unique @default(uuid()) // уникальный индентификатор
-    created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
+    id          String      @id @unique @default(uuid()) // уникальный индентификатор
+    created_at  DateTime    @default(now())
+    updated_at  DateTime    @updatedAt
 
-    name    String      @db.VarChar(200) // название набора
-    author  String      @db.VarChar(200) // автор
-    image   String      @db.VarChar(200) // картинка игрового набора
-    hashTag HashTags[]      // хештеги
+    name        String      @db.VarChar(200) // название набора
+    author      String      @db.VarChar(200) // автор
+    image       String      @db.VarChar(200) // картинка игрового набора
+    hashTag     HashTags[] 
 
-    product Product[]
+    // Reference to store
+    product     Product[]
+    // Reference to market
+    lot         Lot[]
 
     // Добавление связи с GameCard и GameField
-    cards GameCard[]
+    cards       GameCard[]
 
-    field   GameField? @relation(fields: [fieldId], references: [id]) // Уникальная связь с GameField
-    fieldId String?    @unique // Уникальный идентификатор игрового поля в наборе
+    field       GameField?  @relation(fields: [fieldId], references: [id]) // Уникальная связь с GameField
+    fieldId     String?     @unique // Уникальный идентификатор игрового поля в наборе
 
     @@map("game_sets")
 }
 
-// Product
-enum ProductType {
-    GameCard
-    GameField
-    GameSet
-}
-
-model Product {
-    id        String        @id @unique @default(uuid())
-    created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
-
-    count_cards  Int
-    cost         Float
-    discountCost Float?
-    discount     Boolean
-    timeDiscount DateTime
-
-    cardId  String?     @db.VarChar(200)
-    fieldId String?     @db.VarChar(200)
-    setId   String?     @db.VarChar(200)
-
-    productType ProductType
-    card        GameCard?   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    field       GameField?  @relation(fields: [fieldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-    set         GameSet?    @relation(fields: [setId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-    @@map("products")
-}
-
 // model manager
 enum RoleType {
-    user
-    manager
+    moderator
     admin
 }
 
 model Manager {
-    id        String        @id @unique @default(uuid()) // уникальный индентификатор
-    username  String        @db.VarChar(200)/// Имя манагера
-    email     String        @unique /// Email, логин пользователь.
-    password  String
-    language  Language      @default(russian) // язык
-    created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
-    role      RoleType      @default(manager)
+    id          String       @id @unique @default(uuid()) // уникальный индентификатор
+    username    String       @db.VarChar(200)/// Имя манагера
+    email       String       @unique /// Email, логин пользователя
+    password    String
+    language    Language     @default(russian) // язык
+    created_at  DateTime     @default(now())
+    updated_at  DateTime     @updatedAt
+    role        RoleType     @default(moderator)
+
+    // Reference to store
+    product     Product[]
 
     @@unique([id, email])
     @@map("managers")
@@ -234,13 +219,77 @@ model Manager {
 
 // model hashTag
 model HashTags {
-    id        String        @id @unique @default(uuid()) // уникальный индентификатор
-    created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
-    title     String        @unique // название хештега
-    cards     GameCard[]    // карточки
-    fields    GameField[]   // поля
-    set       GameSet[]     // игровой набор
+    id          String       @id @unique @default(uuid()) // уникальный индентификатор
+    created_at  DateTime     @default(now())
+    updated_at  DateTime     @updatedAt
+    title       String       @unique // название хештега
+    cards       GameCard[]   // карточки
+    fields      GameField[]  // поля
+    gameSets    GameSet[]    // игровой набор
 
     @@map("hash_tags")
+}
+
+// Product
+enum LotType {
+    GameCard
+    GameField
+    GameSet
+}
+
+// Store lots
+model Product {
+    lot_id          String      @id @unique @default(uuid())
+
+    created_at      DateTime    @default(now())
+    updated_at      DateTime    @updatedAt
+
+    // Lot data
+    amount          Int
+    cost            Float
+    discount        Boolean
+    disc_cost       Float?
+    disc_expires    DateTime
+
+    // Who put the product
+    manager_id      String      @db.VarChar(200)
+    manager         Manager     @relation(fields: [manager_id], references: [id], onDelete: Cascade)
+
+    // Type of the lot
+    card_id         String?     @db.VarChar(200)
+    field_id        String?     @db.VarChar(200)
+    gameSet_id      String?     @db.VarChar(200)
+    lot_type        LotType
+    card            GameCard?   @relation(fields: [card_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    field           GameField?  @relation(fields: [field_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    set             GameSet?    @relation(fields: [gameSet_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    @@map("store")
+}
+
+// Market table
+model Lot {
+    lot_id         String      @id @unique @default(uuid())
+
+    created_at     DateTime    @default(now())
+    updated_at     DateTime    @updatedAt
+
+    // Lot data
+    amount         Int
+    cost           Float
+
+    // Lot owner
+    user_id        String      @db.VarChar(200)
+    user           User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    // Type of the lot
+    card_id        String?     @db.VarChar(200)
+    field_id       String?     @db.VarChar(200)
+    gameSet_id     String?     @db.VarChar(200)
+    lot_type       LotType
+    card           GameCard?   @relation(fields: [card_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    field          GameField?  @relation(fields: [field_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    set            GameSet?    @relation(fields: [gameSet_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+    @@map("market")
 }

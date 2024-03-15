@@ -1,58 +1,69 @@
-import { Request, Response } from 'hyper-express';
-import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response';
-import { randomUUID } from 'crypto';
-import managerService from '@/resources/manager/manager.service';
-import cardAdminService from './card.admin.service';
-import { cardsModel } from '../card.model';
-import fileNormilize from '@/utils/fileNormilize';
+import { Request, Response } from 'hyper-express'
+import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response'
+import { randomUUID } from 'crypto'
+import managerService from '@/resources/manager/manager.service'
+import cardAdminService from './card.admin.service'
+import { cardsModel } from '../card.model'
+import fileNormilize from '@/utils/fileNormilize'
 
 // card create
 async function cardAdminCreate(req: Request, res: Response) {
 
-    // const id = req.locals.auth?.id;
-
-    let save_path = '';
-    let name: string = '', author: string = '', hashtag: string[] = [];
+    // const id = req.locals.auth?.id
+    let save_path = ''
+    let name: string = '', author: string = '', hashtag: string[] = []
 
     try {
+        // const currentManager = await managerService.managerGetPrisma(id)
+        // if (!currentManager) return BadRequestResponse(res, 404, 'Manager not auth')
 
-        // const currentManager = await managerService.managerGetPrisma(id);
-
-        // if (!currentManager) return BadRequestResponse(res, 404, 'Manager not auth');
-
-        await req.multipart(async (field) => {
-            if (field.file) {
-                const ext = field.file.name?.split(".").pop();
-                const jti = randomUUID();
+        await req.multipart(async (field) =>
+        {
+            if (field.file)
+            {
+                const ext = field.file.name?.split(".").pop()
+                const jti = randomUUID()
                 const fileName = jti + "." + ext
-                save_path = `./src/public/files/images/cards/${fileName}`;
-                await field.write(save_path);
-            } else if (field.name) {
+                save_path = `./src/public/files/images/cards/${fileName}`
+                await field.write(save_path)
+            }
+            else if (field.name)
+            {
                 // Обработка текстовых полей
-                if (field.name === 'name') {
-                    name = field.value as string;
-                } else if (field.name === 'author') {
-                    author = field.value as string;
-                } else if(field.name === 'hashtag') {
-                    hashtag.push(field.value as string);
+                if (field.name === 'name')
+                {
+                    name = field.value as string
+                }
+                else if (field.name === 'author')
+                {
+                    author = field.value as string
+                }
+                else if(field.name === 'hashtag')
+                {
+                    hashtag.push(field.value as string)
                 }
             }
-        });
+        })
 
-        const imageSave = await fileNormilize(req, save_path);
+        const imageSave = await fileNormilize(req, save_path)
 
+        if (!name && !author && !imageSave)
+        {
+            return BadRequestResponse(res, 500, 'Card create failed')
+        }
 
-        if (!name && !author && !imageSave) return BadRequestResponse(res, 500, 'Card create failed');
-
-        if (typeof imageSave !== 'string') {
-            return BadRequestResponse(res, 500, 'Invalid image path');
+        if (typeof imageSave !== 'string')
+        {
+            return BadRequestResponse(res, 500, 'Invalid image path')
         }
 
         const cardCreate = await cardAdminService.cardCreatePrisma(name, author, imageSave, hashtag)
 
-        return CreatedResponse(res, cardsModel(cardCreate));
-    } catch (error: any) {
-        return res.status(500).json({ error: error });
+        return CreatedResponse(res, cardsModel(cardCreate))
+    }
+    catch (error: any)
+    {
+        return res.status(500).json({ error: error })
     }
 }
 

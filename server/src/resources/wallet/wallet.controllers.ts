@@ -1,6 +1,6 @@
 import { Request, Response } from 'hyper-express'
 import { response, res_type } from '@/utils/response'
-import userServices from '@/resources/user/user.services'
+import userServices from '@/resources/user/user.crud'
 import walletServices from './wallet.services'
 import { walletModel } from './wallet.model'
 
@@ -25,7 +25,7 @@ async function getWalletMoney(req: Request, res: Response) {
             return response(res, res_type.not_found, { error: 'User not auth'})
         }
 
-        const wallet = await walletServices.walletGetPrisma(user.id)
+        const wallet = await walletServices.get_wallet(user.id)
 
         if(!wallet)
         {
@@ -71,7 +71,7 @@ async function walletPayment(req: Request, res: Response)
         // Получаем сумму пополнения из объекта
         const paymentAmount = objPay[amountParam as keyof PaymentAmounts];
 
-        const createPayment = await walletServices.walletPaymentPrisma(user.id, paymentAmount)
+        const createPayment = await walletServices.wallet_payment(user.id, paymentAmount)
 
         return response(res, res_type.ok, walletModel(createPayment))
     }

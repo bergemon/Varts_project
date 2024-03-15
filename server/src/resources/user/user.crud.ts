@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma"
 
 // создание пользователя в бд
-async function userCreatePrisma(email: string, password: string)
+async function create_user(email: string, password: string)
 {
     const user = await prisma.user.create({
         data: { email, password }
@@ -59,7 +59,7 @@ async function get_user(id: string)
 }
 
 // получение пользователя из бд по email
-async function userEmailPrisma(email: string)
+async function get_user_by_email(email: string)
 {
     if (!email)
     {
@@ -74,7 +74,7 @@ async function userEmailPrisma(email: string)
 }
 
 // создания пользователя и указание даты рождения
-async function userCreateUserNamePrisma(
+async function init_profile(
   id: string,
   username: string,
   birthday: string,
@@ -93,7 +93,7 @@ async function userCreateUserNamePrisma(
 }
 
 // обновление данных пользователя
-async function userUpdateProfilePrisma(
+async function update_profile(
   id: string,
   username: string,
   birthday: string,
@@ -112,13 +112,13 @@ async function userUpdateProfilePrisma(
 }
 
 export default {
-    userCreatePrisma,
+    create_user,
     create_verification_code,
     verificate_and_delete,
     find_verification_code,
     verify_user,
     get_user,
-    userEmailPrisma,
-    userCreateUserNamePrisma,
-    userUpdateProfilePrisma
+    get_user_by_email,
+    init_profile,
+    update_profile
 }

@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma"
 
 // получение кошелька
-async function walletGetPrisma(user_id: string)
+async function get_wallet(user_id: string)
 {
     const wallet = await prisma.wallet.findFirst({
         where: { user_id: user_id }
@@ -10,7 +10,7 @@ async function walletGetPrisma(user_id: string)
 }
 
 // создание нового кошелька
-async function walletCreatePrisma(user_id: string)
+async function init_wallet(user_id: string)
 {
     const wallet = await prisma.wallet.create({
         data: { user_id: user_id, amount: 0 },
@@ -19,7 +19,7 @@ async function walletCreatePrisma(user_id: string)
 }
 
 // пополнение кошелька
-async function walletPaymentPrisma(user_id: string, amount: number)
+async function wallet_payment(user_id: string, amount: number)
 {
     const wallet = await prisma.wallet.update({
         where: { user_id: user_id },
@@ -34,7 +34,7 @@ async function walletPaymentPrisma(user_id: string, amount: number)
 
 export default
 {
-    walletGetPrisma,
-    walletCreatePrisma,
-    walletPaymentPrisma
+    get_wallet,
+    init_wallet,
+    wallet_payment
 }

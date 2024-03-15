@@ -1,7 +1,7 @@
 import { Request, Response } from 'hyper-express'
 import { response, res_type } from '@/utils/response'
-import userServices from '@/resources/user/user.services'
-import send_email from '@/resources/user/utils/send_email'
+import user_crud from '@/resources/user/user.crud'
+import send_email from '@/utils/send_email'
 import { hashPassword, hash_it } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 
@@ -21,19 +21,19 @@ async function sign_up_user(req: Request, res: Response)
             return response(res, res_type.forbidden, { error: 'Repeated password does not match' })
         }
 
-        const emailUniq = await userServices.userEmailPrisma(email)
+        const emailUniq = await user_crud.get_user_by_email(email)
         if (emailUniq)
         {
             return response(res, res_type.bad_request, { error: 'User already exists' })
         }
 
-        const user = await userServices.userCreatePrisma(email, hashPassword(password))
+        const user = await user_crud.create_user(email, hashPassword(password))
         if (!user)
         {
             return response(res, res_type.server_error, { error: 'User create error' })
         }
 
-        const verification = await userServices.create_verification_code(
+        const verification = await user_crud.create_verification_code(
             hash_it(email).toString(),
             user.id
         )
@@ -41,7 +41,7 @@ async function sign_up_user(req: Request, res: Response)
         send_email(
             `${email}`,
             `Varts online card game <${process.env.GOOGLE_USER}>`,
-            `<h1>Go to ${process.env.BASE_URL_SERVICE}/user/verificate/${verification.hash} to verify your account<h1>`
+            `<h1>Go to ${process.env.BASE_URL_FRONTEND}/verified-user/${verification.hash} to verify your account<h1>`
         )
 
         const { session_token, refresh_token } = auth.generateTokens(user.id, user.email)
@@ -58,9 +58,7 @@ async function sign_up_user(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res
-            .status(res_type.server_error)
-            .json({ error: error})
+        return res.status(res_type.server_error).json({ error: error })
     }
 }
 
@@ -76,7 +74,7 @@ async function verificate_user(req: Request, res: Response)
             .send("<h1>Wrong verification hash code</h1>")
     }
 
-    const verification_code = await userServices.verificate_and_delete(slug)
+    const verification_code = await user_crud.verificate_and_delete(slug)
 
     if (!verification_code)
     {
@@ -86,7 +84,7 @@ async function verificate_user(req: Request, res: Response)
             .send("<h1>Wrong verification hash code</h1>")
     }
 
-    const updated_user = await userServices.verify_user(verification_code.user_id)
+    const updated_user = await user_crud.verify_user(verification_code.user_id)
 
     if (!updated_user)
     {
@@ -105,7 +103,7 @@ async function send_verification_again(req: Request, res: Response)
     {
         const user_id = req.locals.auth?.id
     
-        const user = await userServices.get_user(user_id)
+        const user = await user_crud.get_user(user_id)
     
         if (!user)
         {
@@ -117,7 +115,7 @@ async function send_verification_again(req: Request, res: Response)
             return response(res, res_type.bad_request, { message: "User is already verified" })
         }
     
-        const verification = await userServices.find_verification_code(user_id)
+        const verification = await user_crud.find_verification_code(user_id)
     
         if (!verification)
         {
@@ -134,9 +132,7 @@ async function send_verification_again(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res
-            .status(res_type.server_error)
-            .json({ error: error})
+        return res.status(res_type.server_error).json({ error: error })
     }
 }
 

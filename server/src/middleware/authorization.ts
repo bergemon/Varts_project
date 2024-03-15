@@ -61,22 +61,3 @@ export const authorization = (req: Request, res: Response, next: Function) =>
         next()
     }
 }
-
-export const optionalAuthenticate = (req: Request, res: Response, next: Function) =>
-{
-    const [session_token, refresh_token] = get_tokens_from_request_header(req)
-
-    if (!session_token) {
-        next()
-        return
-    }
-
-    jwt.verify(session_token, process.env.JWT_ACCESS_SECRET!, (err: any, decoded: any) => {
-        if (err) {
-            next()
-            return
-        }
-        req.locals.auth = decoded
-        next()
-    })
-}

@@ -69,10 +69,11 @@ function generateTokens(user_id: string, user_email: string)
     : { session_token: string; refresh_token: string }
 {
     const current_time = new Date().getTime()
-    // 10 minutes
-    const stk_expiration = current_time + 6e5
-    // 90 days
-    const rtk_expiration = current_time + 7776e6
+    const minute = 6e4
+    const day = 864e5
+
+    const stk_expiration = current_time + minute * 10
+    const rtk_expiration = current_time + day * 90
 
     const session_token = createToken(
         { id: user_id, email: user_email, expires: stk_expiration },

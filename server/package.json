@@ -7,10 +7,10 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "start": "dotenv -e src/.env -- npx node build/server.js",
-    "build": "dotenv -e src/.env -- tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "clean": "dotenv -e src/.env -- tsc --build --clean",
-    "dev": "dotenv -e src/.env -- npx ts-node src/server.ts",
+    "start": "dotenv -e ../.env -- npx node build/server.js",
+    "build": "dotenv -e ../.env -- tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "clean": "dotenv -e ../.env -- tsc --build --clean",
+    "dev": "dotenv -e ../.env -- npx ts-node src/server.ts",
     "migrate:create": "dotenv -e src/.env -- npx prisma migrate dev --name init"
   },
   "dependencies": {

@@ -6,7 +6,8 @@ const OAuth2 = google.auth.OAuth2
 const OAuth2_client = new OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET)
 OAuth2_client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
 
-const send_email = async (mail_to: String, subject: String, code: String) => {
+const send_email = async (mail_to: String, subject: String, code: String) =>
+{
     try
     {
         const access_token = OAuth2_client.getAccessToken()

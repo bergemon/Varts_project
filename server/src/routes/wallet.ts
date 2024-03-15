@@ -1,11 +1,11 @@
-import { authenticate } from '@/middleware/authorization'
+import { authorization } from '@/middleware/authorization'
 import walletControllers from '@/resources/wallet/wallet.controllers'
 import { Router } from 'hyper-express'
 
 const router = new Router()
 
-router.get('/', authenticate, walletControllers.getWalletMoney)
+router.get('/', authorization, walletControllers.getWalletMoney)
 
-router.post('/:amountParam', authenticate, walletControllers.walletPayment)
+router.post('/:amountParam', authorization, walletControllers.walletPayment)
 
 export default router
