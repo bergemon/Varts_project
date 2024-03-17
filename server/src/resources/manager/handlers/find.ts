@@ -5,10 +5,18 @@ import manager_models from '../manager.model'
 
 async function find_managers_by_username(req: Request, res: Response): Promise<Response>
 {
+    const authorized_manager_id = req.locals.auth?.id
+
     const find_by_username = req.params.username
 
     try
     {
+        const authorized_manager = await manager_crud.get_manager_by_id(authorized_manager_id)
+        if (!authorized_manager)
+        {
+            return response(res, res_type.forbidden, { error: "Prohibited route" })
+        }
+        
         const { query } = req
     
         if (Array.isArray(query.page) || Array.isArray(query.limit))
