@@ -10,10 +10,10 @@ import { Router } from 'hyper-express'
 
 const router = new Router()
 
-// Get authorized manager's profile
+// Get authorized managers profile
 router.get('/', json_checker, authorization, manager_handlers.get_manager_authorized)
 
-// Get another manager's profile by id
+// Get another manager profile by id
 // Will get partial view if current manager does not have higher authority
 // than the desired manager
 router.get('/get-by-id/:id', json_checker, authorization, manager_handlers.get_other_manager)
@@ -36,7 +36,7 @@ router.post('/create', json_checker, authorization, create_handlers.create_manag
 // Login as manager
 router.post('/login', json_checker, authorization, login_handlers.authenticate_manager)
 
-// Update manager's profile
+// Update managers profile
 router.put('/update-profile', json_checker, authorization, profile_handlers.manager_update_profile)
 
 // Delete manager

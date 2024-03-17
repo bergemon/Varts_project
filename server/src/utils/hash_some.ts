@@ -9,7 +9,7 @@ export const hash_it = (src: string) =>
 }
 
 // brypct hash functions
-// used to crypt and encrypt user's and manager's password
+// used to crypt and encrypt user and manager password
 const saltRounds = 10
 
 export function hash_password(password: string)

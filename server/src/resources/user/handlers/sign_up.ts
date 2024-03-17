@@ -124,7 +124,7 @@ async function send_verification_again(req: Request, res: Response): Promise<Res
     
         if (!verification)
         {
-            return response(res, res_type.server_error, { error: "Can't find current user's verification code" })
+            return response(res, res_type.server_error, { error: "Can't find current user verification code" })
         }
     
         send_email(

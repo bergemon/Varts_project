@@ -12,8 +12,8 @@ export function get_manager_view_by_rights(
 
     const desired_manager_rights = exist_roles.findIndex(elem => elem === desired_manager_role)
 
-    // Return full view if current manager's role has higher authority
-    // aka is left of desired manager's role in an array
+    // Return full view if current manager role has higher authority
+    // aka is left of desired manager role in an array
     return authorized_manager_role_rights < desired_manager_rights
         ? manager_model.manager_view_full(found_manager)
         : manager_model.manager_view_partial(found_manager)

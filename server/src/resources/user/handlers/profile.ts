@@ -60,7 +60,7 @@ async function create_profile(req: Request, res: Response): Promise<Response>
             return response(res, res_type.server_error, { error: "Can't create user profile" })
         }
 
-        return response(res, res_type.ok, { message: "User's profile has been updated" })
+        return response(res, res_type.ok, { message: "User profile has been updated" })
     }
     catch (error: any)
     {

@@ -23,7 +23,7 @@ export function is_role_exist(role: string): boolean
 // Other manager can be created only with the role that has less rights than the creator
 export function rights_to_create_manager(manager_role: string, role: string): boolean
 {
-    // Manager's role must have a rights to create other managers
+    // Manager role must have a rights to create other managers
     const found_id = rights_to_create.findIndex((elem: string) => (
         elem === manager_role
     ))

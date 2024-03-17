@@ -16,7 +16,7 @@ router.get('/', json_checker, authorization, user_handlers.get_user)
 router.get('/verificate/:hash', sign_up_handlers.verificate_user)
 
 // get another user by id
-// only friends can see other user's email and birthday
+// only friends can see other users email and birthday
 // managers with any roles can see extra fields
 // such as - created_at, updated_at, verified
 router.get('/get-by-id/:id', json_checker, authorization, user_handlers.get_user_by_id)

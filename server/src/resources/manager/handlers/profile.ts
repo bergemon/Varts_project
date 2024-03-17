@@ -32,7 +32,7 @@ async function manager_update_profile(req: Request, res: Response): Promise<Resp
         if(!updated_manager)
         {
             return response(res, res_type.server_error,
-                { error: "Can not update manager's profile"})
+                { error: "Can not update manager profile"})
         }
 
         return response(res, res_type.ok, manager_model.manager_view_full(updated_manager))
