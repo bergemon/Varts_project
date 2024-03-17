@@ -12,11 +12,11 @@ const router = new Router()
 // user routes
 router.use('/v1/user', user_routes)
 
+// admins
+router.use('/v1/dashboard/manager', manager_routes)
+
 // wallet routes
 router.use('/v1/payment', wallet_routes)
-
-// dashboard
-router.use('/v1/dashboard/manager', manager_routes)
 
 // card routes
 router.use('/v1/card', card_routes)

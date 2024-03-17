@@ -1,11 +1,11 @@
-import prisma from "@/utils/prisma"
+import prisma from '@/utils/prisma'
 
-// создание пользователя в бд
 async function create_user(email: string, password: string)
 {
     const user = await prisma.user.create({
         data: { email, password }
     })
+
     return user
 }
 
@@ -14,6 +14,7 @@ async function create_verification_code(hashed_email: string, user_id: string)
     const verification_code = await prisma.verificationCodes.create({
         data: { hash: hashed_email, user_id }
     })
+
     return verification_code
 }
 
@@ -22,6 +23,7 @@ async function verificate_and_delete(slug: string)
     const verification_code = await prisma.verificationCodes.delete({
         where: { hash: slug }
     })
+
     return verification_code
 }
 
@@ -30,6 +32,7 @@ async function find_verification_code(user_id: string)
     const verification_code = await prisma.verificationCodes.findFirst({
         where: { user_id }
     })
+
     return verification_code
 }
 
@@ -37,15 +40,13 @@ async function verify_user(id: string)
 {
     const updated_user = await prisma.user.update({
         where: { id },
-        data: {
-            verified: true
-        }
+        data: { verified: true }
     })
+    
     return updated_user
 }
 
-// получение пользователя из бд
-async function get_user(id: string)
+async function get_user_by_id(id: string)
 {
     if (!id)
     {
@@ -55,10 +56,10 @@ async function get_user(id: string)
     const user = await prisma.user.findUnique({
         where: { id }
     })
+
     return user
 }
 
-// получение пользователя из бд по email
 async function get_user_by_email(email: string)
 {
     if (!email)
@@ -73,42 +74,56 @@ async function get_user_by_email(email: string)
     return user
 }
 
-// создания пользователя и указание даты рождения
 async function init_profile(
-  id: string,
-  username: string,
-  birthday: string,
-  language: 'russian' | 'english'
+    id: string,
+    username: string,
+    birthday: string,
+    language: 'russian' | 'english'
 )
 {
     const user = await prisma.user.update({
         where: { id },
-        data: {
-            username,
-            birthday,
-            language
-        }
+        data: { username, birthday, language }
     })
+
     return user
 }
 
-// обновление данных пользователя
 async function update_profile(
-  id: string,
-  username: string,
-  birthday: string,
-  language: 'russian' | 'english'
+    id: string,
+    username: string,
+    birthday: string,
+    language: 'russian' | 'english'
 )
 {
     const user = await prisma.user.update({
         where: { id },
-        data: {
-            username,
-            birthday,
-            language
+        data: { username, birthday, language }
+    })
+
+    return user
+}
+
+async function find_users_by_username(
+    username: string,
+    page: number,
+    limit: number
+)
+{
+    const users = await prisma.user.findMany({
+        where: {
+            username: {
+                contains: username
+            }
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+            username: 'asc'
         }
     })
-    return user
+
+    return users
 }
 
 export default {
@@ -117,8 +132,9 @@ export default {
     verificate_and_delete,
     find_verification_code,
     verify_user,
-    get_user,
+    get_user_by_id,
     get_user_by_email,
     init_profile,
-    update_profile
+    update_profile,
+    find_users_by_username
 }

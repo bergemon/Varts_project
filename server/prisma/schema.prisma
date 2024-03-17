@@ -45,10 +45,10 @@ model User {
     lot             Lot[]
 
     // friends
-    friends         Friendship[] @relation("friends")
-    friendsReceiver Friendship[] @relation("friendsReceiver")
+    friends         Friends[] @relation("friends")
+    friendsReceiver Friends[] @relation("friendsReceiver")
 
-    // friendship requests
+    // friends requests
     requests Requests[]
 
     @@unique([id, email])
@@ -79,10 +79,9 @@ model Wallet{
 }
 
 // Friends
-model Friendship {
+model Friends {
     id        String        @id @unique @default(uuid())
     created_at DateTime     @default(now())
-    updated_at DateTime     @updatedAt
 
     // id пользователя
     user        User?       @relation("friendsReceiver", fields: [user_id], references: [id], onDelete: Cascade)
@@ -93,7 +92,7 @@ model Friendship {
     friend_id   String?
 }
 
-// Friendship requests
+// Friends requests
 model Requests {
     id          String       @id @unique @default(uuid())
     created_at  DateTime     @default(now())
@@ -194,18 +193,22 @@ model GameSet {
     @@map("game_sets")
 }
 
-// model manager
+// Model manager
+// Warning!!!
+// Managers with much rights must be higher in enumeration!
 enum RoleType {
-    moderator
+    superadmin
     admin
+    moderator
+    support
 }
 
 model Manager {
-    id          String       @id @unique @default(uuid()) // уникальный индентификатор
-    username    String       @db.VarChar(200)/// Имя манагера
-    email       String       @unique /// Email, логин пользователя
+    id          String       @id @unique @default(uuid())
+    username    String       @db.VarChar(200)   // manager username
+    email       String       @unique            // data to login
     password    String
-    language    Language     @default(russian) // язык
+    language    Language     @default(russian)
     created_at  DateTime     @default(now())
     updated_at  DateTime     @updatedAt
     role        RoleType     @default(moderator)

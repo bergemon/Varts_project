@@ -2,10 +2,10 @@ import { Request, Response } from 'hyper-express'
 import { response, res_type } from '@/utils/response'
 import user_crud from '@/resources/user/user.crud'
 import send_email from '@/utils/send_email'
-import { hashPassword, hash_it } from '@/utils/hash_some'
+import { hash_password, hash_it } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 
-async function sign_up_user(req: Request, res: Response)
+async function sign_up_user(req: Request, res: Response): Promise<Response>
 {
     const { email, password, password_repeat } = await req.json()
 
@@ -13,7 +13,8 @@ async function sign_up_user(req: Request, res: Response)
     {
         if (!email && !password && !password_repeat)
         {
-            return response(res, res_type.server_error, { error: 'Please write email, password & password_repeat' })
+            return response(res, res_type.bad_request,
+                { error: "Please put email, password & password_repeat into JSON as fields" })
         }
 
         if (password !== password_repeat)
@@ -27,7 +28,7 @@ async function sign_up_user(req: Request, res: Response)
             return response(res, res_type.bad_request, { error: 'User already exists' })
         }
 
-        const user = await user_crud.create_user(email, hashPassword(password))
+        const user = await user_crud.create_user(email, hash_password(password))
         if (!user)
         {
             return response(res, res_type.server_error, { error: 'User create error' })
@@ -58,52 +59,56 @@ async function sign_up_user(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res.status(res_type.server_error).json({ error: error })
+        return response(res, res_type.server_error, { error: error })
     }
 }
 
-async function verificate_user(req: Request, res: Response)
+async function verificate_user(req: Request, res: Response): Promise<Response>
 {
     const slug = req.params.hash
 
-    if (slug.length !== 14)
+    try
     {
-        return res
-            .status(res_type.bad_request)
-            .header("Content-Type", "text/html")
-            .send("<h1>Wrong verification hash code</h1>")
+        if (slug.length !== 14)
+        {
+            return res
+                .status(res_type.bad_request)
+                .header("Content-Type", "text/html")
+                .send("<h1>Wrong verification hash code</h1>")
+        }
+    
+        const verification_code = await user_crud.verificate_and_delete(slug)
+    
+        if (!verification_code)
+        {
+            return res
+                .status(res_type.bad_request)
+                .header("Content-Type", "text/html")
+                .send("<h1>Wrong verification hash code</h1>")
+        }
+    
+        const updated_user = await user_crud.verify_user(verification_code.user_id)
+    
+        if (!updated_user)
+        {
+            return response(res, res_type.server_error, { error: "Can't update user"})
+        }
+    
+        return response(res, res_type.ok, { message: `User ${updated_user.email} was succesfully verified`})
     }
-
-    const verification_code = await user_crud.verificate_and_delete(slug)
-
-    if (!verification_code)
+    catch (error: any)
     {
-        return res
-            .status(res_type.bad_request)
-            .header("Content-Type", "text/html")
-            .send("<h1>Wrong verification hash code</h1>")
+        return response(res, res_type.server_error, { error: error })
     }
-
-    const updated_user = await user_crud.verify_user(verification_code.user_id)
-
-    if (!updated_user)
-    {
-        return response(res, res_type.server_error, { error: "Can't update user"})
-    }
-
-    return res
-        .status(res_type.ok)
-        .header("Content-Type", "text/html")
-        .send(`<h1>User ${updated_user.email} was succesfully verified!</h1>`)
 }
 
-async function send_verification_again(req: Request, res: Response)
+async function send_verification_again(req: Request, res: Response): Promise<Response>
 {
     try
     {
         const user_id = req.locals.auth?.id
     
-        const user = await user_crud.get_user(user_id)
+        const user = await user_crud.get_user_by_id(user_id)
     
         if (!user)
         {
@@ -132,7 +137,7 @@ async function send_verification_again(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res.status(res_type.server_error).json({ error: error })
+        return response(res, res_type.server_error, { error: error })
     }
 }
 

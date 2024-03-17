@@ -1,7 +1,7 @@
 import { Request, Response } from 'hyper-express'
 import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response'
 import { randomUUID } from 'crypto'
-import managerService from '@/resources/manager/manager.service'
+import managerService from '@/resources/manager/manager.crud'
 import cardAdminService from './card.admin.service'
 import { cardsModel } from '../card.model'
 import fileNormilize from '@/utils/fileNormilize'

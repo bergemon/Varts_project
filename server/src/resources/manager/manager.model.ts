@@ -1,19 +1,31 @@
 import { Manager } from "@prisma/client"
 
-// Модель менеджеров
-function managerModel(manager: Manager) {
-    const managerView = {
+function manager_view_full(manager: Manager)
+{
+    const view = {
         id: manager.id,
-        userName: manager.username,
+        username: manager.username,
         email: manager.email,
         language: manager.language,
         created_at: manager.created_at,
         updated_at: manager.updated_at,
         role: manager.role
     }
-    return managerView
+    return view
 }
 
-export {
-    managerModel
+function manager_view_partial(manager: Manager)
+{
+    const view = {
+        id: manager.id,
+        username: manager.username,
+        language: manager.language,
+        role: manager.role
+    }
+    return view
+}
+
+export default {
+    manager_view_full,
+    manager_view_partial
 }

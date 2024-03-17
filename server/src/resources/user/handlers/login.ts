@@ -1,11 +1,11 @@
 import { Request, Response } from 'hyper-express'
 import { response, res_type } from '@/utils/response'
 import user_crud from '@/resources/user/user.crud'
-import { compareWithHash } from '@/utils/hash_some'
+import { compare_passwords } from '@/utils/hash_some'
 import auth from '@/utils/auth'
 
 // login
-async function authenticate_user(req: Request, res: Response) 
+async function authenticate_user(req: Request, res: Response): Promise<Response>
 {
     const { email, password } = await req.json()
     
@@ -22,7 +22,7 @@ async function authenticate_user(req: Request, res: Response)
             return response(res, res_type.not_found, { error: 'User not found' })
         }
 
-        if (!compareWithHash(password, user.password))
+        if (!compare_passwords(password, user.password))
         {
             return response(res, res_type.forbidden, { error: 'Wrong password' })
         }
@@ -41,7 +41,7 @@ async function authenticate_user(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res.status(res_type.server_error).json({ error: error })
+        return response(res, res_type.server_error, { error: error })
     }
 }
 

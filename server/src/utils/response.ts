@@ -20,17 +20,14 @@ export enum res_type
     not_implemented = 501
 }
 
-const response = <T extends object>(res: Response, status: res_type | number, data: T | string): Response =>
+const response = <T extends object>(res: Response, status: res_type | number, data: T): Response =>
 {
     return res
         .status(status)
         .header('Connection', 'keep-alive')
         .header('Keep-Alive', 'timeout=20')
         .header('Content-Type', 'application/json')
-        .send(
-            JSON.stringify({data} as ResponseData),
-        )
-        .end()
+        .send(JSON.stringify(data))
 }
 
 const OkResponse = (res: Response, data: any): Response =>

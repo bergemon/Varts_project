@@ -4,6 +4,7 @@ import sign_up_handlers from '@/resources/user/handlers/sign_up'
 import login_handlers from '@/resources/user/handlers/login'
 import profile_handlers from '@/resources/user/handlers/profile'
 import user_handlers from '@/resources/user/handlers/user'
+import find_handlers from '@/resources/user/handlers/find'
 import { Router } from 'hyper-express'
 
 const router = new Router()
@@ -13,6 +14,17 @@ router.get('/', json_checker, authorization, user_handlers.get_user)
 
 // verificate a signed up user
 router.get('/verificate/:hash', sign_up_handlers.verificate_user)
+
+// get another user by id
+// only friends can see other user's email and birthday
+// managers with any roles can see extra fields
+// such as - created_at, updated_at, verified
+router.get('/get-by-id/:id', json_checker, authorization, user_handlers.get_user_by_id)
+
+// Find users by username, only authorized persons (users, managers) can find other users
+// route has required queries - page & limit
+// returns only partial view of the manager model
+router.get('/find/:username', json_checker, authorization, find_handlers.find_users_by_username)
 
 // sign up
 router.post('/register', json_checker, sign_up_handlers.sign_up_user)

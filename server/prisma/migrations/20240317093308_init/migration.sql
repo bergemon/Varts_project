@@ -8,7 +8,7 @@ CREATE TYPE "AccountType" AS ENUM ('base', 'premium');
 CREATE TYPE "EventTypes" AS ENUM ('FRIEND_REQUEST', 'INVITED_TO_ROOM', 'USER_ENTERED_ROOM', 'PREMIUM_ACTION_EXPIRED', 'SUBSCRIPTION_ENDING', 'SUPPORT_MESSAGE', 'GIFT_CARD', 'USER_GIFTED_CARD', 'MODERATION_PASSED', 'MOVE_TO_AUCTION');
 
 -- CreateEnum
-CREATE TYPE "RoleType" AS ENUM ('moderator', 'admin');
+CREATE TYPE "RoleType" AS ENUM ('superadmin', 'admin', 'moderator', 'support');
 
 -- CreateEnum
 CREATE TYPE "LotType" AS ENUM ('GameCard', 'GameField', 'GameSet');
@@ -48,14 +48,14 @@ CREATE TABLE "wallets" (
 );
 
 -- CreateTable
-CREATE TABLE "Friendship" (
+CREATE TABLE "Friends" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" TEXT,
     "friend_id" TEXT,
 
-    CONSTRAINT "Friendship_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Friends_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -220,7 +220,7 @@ CREATE UNIQUE INDEX "wallets_id_key" ON "wallets"("id");
 CREATE UNIQUE INDEX "wallets_user_id_key" ON "wallets"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Friendship_id_key" ON "Friendship"("id");
+CREATE UNIQUE INDEX "Friends_id_key" ON "Friends"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "requests_id_key" ON "requests"("id");
@@ -292,10 +292,10 @@ ALTER TABLE "verification_codes" ADD CONSTRAINT "verification_codes_user_id_fkey
 ALTER TABLE "wallets" ADD CONSTRAINT "wallets_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Friendship" ADD CONSTRAINT "Friendship_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Friends" ADD CONSTRAINT "Friends_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Friendship" ADD CONSTRAINT "Friendship_friend_id_fkey" FOREIGN KEY ("friend_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Friends" ADD CONSTRAINT "Friends_friend_id_fkey" FOREIGN KEY ("friend_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "requests" ADD CONSTRAINT "requests_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'hyper-express';
 import { BadRequestResponse, CreatedResponse, NotFoundResponse, OkResponse } from '@/utils/response';
 import { randomUUID } from 'crypto';
-import managerService from '@/resources/manager/manager.service';
+import managerService from '@/resources/manager/manager.crud';
 import fileNormilize from '@/utils/fileNormilize';
 import gameSetAdminService from './gameSet.admin.service';
 import { gameSetModel } from '../gameSet.model';

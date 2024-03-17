@@ -6,9 +6,9 @@ import walletServices from '@/resources/wallet/wallet.services'
 
 
 // create profile
-async function create_profile(req: Request, res: Response)
+async function create_profile(req: Request, res: Response): Promise<Response>
 {
-    const id = req.locals.auth?.id
+    const authorized_user_id = req.locals.auth?.id
     const { user_name, birth_date, language } = await req.json()
 
     try
@@ -18,7 +18,7 @@ async function create_profile(req: Request, res: Response)
             return response(res, res_type.bad_request, { error: "put user_name, birth_date & language into request json body" })
         }
 
-        const user = await user_crud.get_user(id)
+        const user = await user_crud.get_user_by_id(authorized_user_id)
 
         if (!user)
         {
@@ -53,7 +53,7 @@ async function create_profile(req: Request, res: Response)
             }
         }
 
-        const updated_user = user_model.get(createProfile)
+        const updated_user = user_model.user_view_full(createProfile)
 
         if (!updated_user)
         {
@@ -64,49 +64,34 @@ async function create_profile(req: Request, res: Response)
     }
     catch (error: any)
     {
-        return res.status(res_type.server_error).json({ error: error })
+        return response(res, res_type.server_error, { error: error })
     }
 }
 
-// обновление профиля
-async function update_profile(req: Request, res: Response)
+async function update_profile(req: Request, res: Response): Promise<Response>
 {
-    const id = req.locals.auth?.id
+    const authorized_user_id = req.locals.auth?.id
 
     let { username, birthday, language } = await req.json()
 
     try
     {
-        const user = await user_crud.get_user(id)
+        const authorized_user = await user_crud.get_user_by_id(authorized_user_id)
 
-        if (!user)
+        if (!authorized_user)
         {
             return response(res, res_type.server_error, { error: "Can't get the user" })
         }
 
         // Need to provide at least one field
-        if (!username && !birthday && !language)
+        if (!username || !birthday || !language)
         {
-            const error = "Provide at least one of those fields: username, birthday, language"
-            return response(res, res_type.bad_request, { error: error })
-        }
-
-        // If some fields was not provided by the frontend
-        if (!username)
-        {
-            username = user.username
-        }
-        if (!birthday)
-        {
-            birthday = user.birthday
-        }
-        if (!language)
-        {
-            language = user.language
+            return response(res, res_type.bad_request,
+                { error: "You must put all these fields to JSON: username, birthday, language" })
         }
 
         const updateUser = await user_crud.update_profile(
-            id, username, birthday, language
+            authorized_user_id, username, birthday, language
         )
 
         if (!updateUser)
@@ -114,11 +99,11 @@ async function update_profile(req: Request, res: Response)
             return response(res, res_type.server_error, { error: 'User failed update information' })
         }
 
-        return response(res, res_type.ok, user_model.get(updateUser))
+        return response(res, res_type.ok, user_model.user_view_full(updateUser))
     }
     catch(error: any)
     {
-        return res.status(res_type.server_error).json({ error: error })
+        return response(res, res_type.server_error, { error: error })
     }
 }
 
