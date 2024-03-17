@@ -30,7 +30,7 @@ router.get('/find-by-username/:username', json_checker, find_handlers.find_manag
 router.get('/find-by-email/:email', json_checker, authorization, find_handlers.find_managers_by_email)
 
 // Create new manager
-// Manager can create other managers only if he's role has higher rights
+// Manager can create other managers only if it's role has higher rights
 router.post('/create', json_checker, authorization, create_handlers.create_manager)
 
 // Login as manager
